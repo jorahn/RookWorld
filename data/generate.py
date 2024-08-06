@@ -42,14 +42,17 @@ def format_sample(fen, moves, evals):
     return fen_part + moves_part + evals_part + best_move
 
 ds = load_dataset("jrahn/yolochess_lichess-elite_2211")
-max_n = int(sys.argv[1])
+
+gen_range = sys.argv[1] #"20500:25000"
+start_n , stop_n = map(int, gen_range.split(":"))
 
 with open("ds.txt", "w") as f:
     for n, fen in enumerate(tqdm(ds["train"]["fen"])):
-        moves, evals = get_stockfish_analysis(fen)
-        formatted_sample = format_sample(fen, moves, evals)
-        f.write(formatted_sample+"\n")
+        if n >= start_n:
+            moves, evals = get_stockfish_analysis(fen)
+            formatted_sample = format_sample(fen, moves, evals)
+            f.write(formatted_sample+"\n")
 
-        if n > max_n: break
+        if n > stop_n: break
 
 engine.quit()
