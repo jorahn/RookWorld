@@ -15,7 +15,7 @@ def get_stockfish_analysis(fen, depth=20):
     board = chess.Board(fen)
     
     # Get top 5 moves
-    info = engine.analyse(board, chess.engine.Limit(depth=depth), multipv=5)
+    info = engine.analyse(board, chess.engine.Limit(time=0.1), multipv=5)
     
     moves = [str(entry["pv"][0]) for entry in info]
     evals = [str(entry["score"].relative.score(mate_score=100000) / 100) for entry in info]
