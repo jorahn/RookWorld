@@ -8,15 +8,5 @@ pip install chess datasets tqdm
 cp -r scripts/ llm.c/scripts/
 cp -r dev/ llm.c/
 
-cd llm.c/dev/data/rook
-python generate_lichess.py -p $STOCKFISH_PATH
-python generate_selfplay.py -p $STOCKFISH_PATH
-cd ..
-
-python rook.py
-cd ..
-
+cd llm.c/dev/
 bash download_starter_pack.sh
-cd ..
-
-bash scripts/run_gpt2_124M_rook.sh
