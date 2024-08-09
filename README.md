@@ -17,7 +17,16 @@ A chess-playing transformer model trained on a synthetic dataset with chain-of-t
 - `bash run.sh` for 
   - basic data gen (~20k samples, half human and selfplay, ~30 mins on 6 cores)
   - train minimal model on one GPU for 5000 steps (2 epochs) with bs=1 to val-loss ~0.73
-  - convert model.bin to hf and run self-play eval (avg ~3.5 legal moves, with 260k samples -> 13 legal moves)
+  - convert model.bin to hf and run self-play eval (avg ~3.5 legal moves)
+
+### data scaling
+
+| Samples | Steps/Epochs | Val-Loss | Selfplay Legal Moves |
+|---------|--------------|----------|----------------------|
+|    20k  |    5000 / 2  |   0.73   |          3.5         |
+|   260k  |   18624 / 1  |   0.56   |         15.5         |
+|   709k  |   51481 / 1  |   0.59   |         19.2         |
+
 
 ## generate dataset
 1. generate a text-dataset with stockfish (very cpu intense)
