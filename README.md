@@ -1,3 +1,5 @@
+<img src="logo.png" width="150" height="150">
+
 # ROOK: Reasoning Over Organized Knowledge
 
 A chess-playing transformer model trained on a synthetic dataset with chain-of-thought evaluation from Stockfish.
