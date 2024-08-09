@@ -24,11 +24,11 @@ print(f"running stockfish on {threads} threads in parallel")
 ds = load_dataset(args.fen_dataset, split=args.split)
 
 # generate the stockfish eval dataset
-def get_stockfish_analysis(fen, time=0.1):
+def get_stockfish_analysis(fen, time_limit=0.1):
     board = chess.Board(fen)
     
     # Get top 5 moves
-    info = engine.analyse(board, chess.engine.Limit(time=time), multipv=5)
+    info = engine.analyse(board, chess.engine.Limit(time=time_limit), multipv=5)
     
     moves = [str(entry["pv"][0]) for entry in info if "pv" in entry]
     evals = [str(entry["score"].relative.score(mate_score=100000) / 100) for entry in info if "score" in entry]
@@ -67,7 +67,7 @@ if os.path.exists(args.output):
 # dont parallelize this with dataset.map, as stockfish is already parallelized
 with open(args.output, "w") as f:
     for fen in tqdm(ds["fen"]):
-        moves, evals = get_stockfish_analysis(fen, time=args.timelimit)
+        moves, evals = get_stockfish_analysis(fen, time_limit=args.timelimit)
         formatted_sample = format_sample(fen, moves, evals)
         f.write(formatted_sample+"\n")
 

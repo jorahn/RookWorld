@@ -1,24 +1,34 @@
+import random, psutil, argparse
+
 import chess
 import chess.engine
-import random
-import sys
 from datasets import load_dataset
 from tqdm import tqdm
-import psutil
 
-engine = chess.engine.SimpleEngine.popen_uci(sys.argv[1])
-threads = 1 #max(1, psutil.cpu_count(logical=False) - 1)
+parser = argparse.ArgumentParser(description="ChessReasoner dataset generation from stockfish selfplay")
+parser.add_argument("-p", "--stockfish_path", type=str, help="Path to the stockfish binary")
+parser.add_argument("-n", "--number_games", type=int, default=500, help="Number of games to play")
+parser.add_argument("-o", "--output", type=str, default="chessreason.txt", help="Filename of the generated output dataset")
+parser.add_argument("-l", "--timelimit", type=float, default=0.1, help="Stockfish analysis time limit per position")
+parser.add_argument("-t", "--threads", type=int, default=-1, help="Number of threads to use for stockfish analysis. -1 = for one thread per CPU core.")
+args = parser.parse_args()
+
+# instantiate the stockfish engine, configure it to use all but one core, fail if the stockfish path is not provided
+engine = chess.engine.SimpleEngine.popen_uci(args.stockfish_path)
+threads = max(1, psutil.cpu_count(logical=False)) if args.threads == -1 else args.threads
 engine.configure({"Threads": threads})
 print(f"running stockfish on {threads} threads in parallel")
 
-def stockfish_selfplay():
+# generate the stockfish eval dataset from selfplay
+def stockfish_selfplay(out, time_limit):
     board = chess.Board()
     while not board.is_game_over() or board.ply() <= 60:
         fen = board.fen()
 
         # Get top 5 moves
-        info = engine.analyse(board, chess.engine.Limit(time=1), multipv=5)
+        info = engine.analyse(board, chess.engine.Limit(time=time_limit), multipv=5)
         
+        # TODO: why does this sometimes fail but not in human games?
         if not all(["pv" in entry for entry in info]): break
 
         moves = [str(entry["pv"][0]) for entry in info]
@@ -34,22 +44,22 @@ def stockfish_selfplay():
         # select best move (first for white, last for black)
         best_move = moves[-1] if is_black_turn else moves[0]
 
+        # push move before it's modified for formatting
         board.push_uci(best_move)
 
-        # Format parts
-        # test padding vs packing
+        # format parts
+        # TODO: test padding vs packing
         fen_part   = f"P: {fen:90}" # https://chess.stackexchange.com/questions/30004/longest-possible-fen
         moves_part = f"M: {' '.join(shuffled_moves):30}"
         evals_part = f"E: {' '.join(shuffled_evals):40}"
         best_move  = f"B: {best_move}"
     
         fen_part + moves_part + evals_part + best_move
-        with open("ds_selfplay.txt", "a") as f:
-            f.write(fen_part + moves_part + evals_part + best_move + "\n")
+        out.write(fen_part + moves_part + evals_part + best_move + "\n")
         
-        #board.push(chess.Move.from_uci(best_move))
 
-for n in tqdm(range(int(sys.argv[2]))):
-    stockfish_selfplay()
+with open(args.output, "w") as out:
+    for _ in tqdm(range(args.number_games)):
+        stockfish_selfplay(out, time_limit=args.timelimit)
 
 engine.quit()
