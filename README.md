@@ -13,7 +13,7 @@ A chess-playing transformer model trained on a synthetic dataset with chain-of-t
 - cd into the repo folder `cd rook` and run `bash setup.sh`
   - this will clone llm.c at a specific commit
   - copies files for dataset generation, training and evaluation of ROOK into llm.c
-- finalize environment setup for llm.c with dependencies like cuda, cudnn and nccl as per llm.c docs
+- finalize environment setup for llm.c with dependencies like cuda, cudnn or cudnn-frontend and nccl as per llm.c docs
 - `bash run.sh` for basic data gen (~20k samples, half human and selfplay, ~30 mins on 6 cores) and train minimal model on one GPU with bs=1
 
 ## generate dataset
