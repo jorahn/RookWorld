@@ -23,5 +23,5 @@ A chess-playing transformer model trained on a synthetic dataset with chain-of-t
 
 ## evaluation
 - run `llm.c/dev/eval/export_hf.py` on a model.bin
-- run `llm.c/dev/eval/rook_self_play.py` to play the converted model against itself, observe number of moves before illegal move
+- run `llm.c/dev/eval/rook_selfplay.py` to play the converted model against itself, observe number of moves before illegal move
 - run `llm.c/dev/eval/rook_analysis.py` to provide an FEN (e.g. from a human game) and get the model evaluation for it
