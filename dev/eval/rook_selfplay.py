@@ -1,13 +1,18 @@
-import sys
+import argparse
 
 from transformers import pipeline
 import torch
 import chess
 from tqdm import tqdm
 
-p = pipeline("text-generation", model=sys.argv[1], device="cuda", torch_dtype=torch.bfloat16)
+parser = argparse.ArgumentParser(description="ROOK self-play evaluation for illegal moves")
+parser.add_argument("-m", "--model_path", type=str, help="ROOK hf gpt2 model")
+parser.add_argument("-n", "--num_games", type=int, default=50, help="number of selfplay games")
+args = parser.parse_args()
+
+p = pipeline("text-generation", model=args.model_path, device="cuda", torch_dtype=torch.bfloat16)
 counters = []
-for n in tqdm(range(50)):
+for _ in tqdm(range(args.num_games)):
     counter = 0
     board = chess.Board()
     err = False
