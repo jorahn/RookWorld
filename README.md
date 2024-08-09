@@ -17,9 +17,9 @@ A chess-playing transformer model trained on a synthetic dataset with chain-of-t
 
 ## generate dataset
 1. generate a text-dataset with stockfish (very cpu intense)
-  1.1 to generate a text-dataset from human chess positions run `llm.c/dev/data/rook/generate_lichess.py -p $STOCKFISH_PATH`
-  1.2 to generate a text-dataset from stockfish self-play positions run `llm.c/dev/data/rook/generate_selfplay.py -p $STOCKFISH_PATH`
-2. to generate llm.c train and valid files (.bin) from text-datasets run `llm.c/dev/data/rook.py`
+   1. to generate a text-dataset from human chess positions run `llm.c/dev/data/rook/generate_lichess.py -p $STOCKFISH_PATH`
+   2. to generate a text-dataset from stockfish self-play positions run `llm.c/dev/data/rook/generate_selfplay.py -p $STOCKFISH_PATH`
+3. to generate llm.c train and valid files (.bin) from text-datasets run `llm.c/dev/data/rook.py`
 
 ## run training
 - modify / run `llm.c/scripts/run_gpt2_124M_rook.sh`
