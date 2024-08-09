@@ -3,7 +3,7 @@ cd llm.c
 git checkout -q 6e6a528111cc6641f09d0ebf2ca1e7432d1c87a4
 cd ..
 
-cp -r scripts/ llm.c/scripts/
+cp -r scripts/ llm.c/
 cp -r dev/ llm.c/
 pip install -r requirements.txt
 
