@@ -1,4 +1,4 @@
-dev/data/*.txt
+dev/data/**/*.txt
 llm.c
 
 # Byte-compiled / optimized / DLL files
