@@ -6,28 +6,35 @@ example doc to highlight the structure of the dataset (newline delimited text fi
 P: r1b1kbnr/pp2pppp/n1p5/q2PP3/3P4/2N5/PP3PPP/R1BQKBNR b KQkq - 2 6                          M: c6d5 a6b4 c8d7 a6c7 a6b8      E: -2.0 -2.07 -2.92 -2.79 -2.66            B: c8d7
 """
 
-import os
+import os, argparse, random
 import multiprocessing as mp
+from glob import glob
+
 import numpy as np
 import tiktoken
 from tqdm import tqdm
-import argparse
 
 from data_common import write_datafile
 # ------------------------------------------
 
-parser = argparse.ArgumentParser(description="DeepChessReasoner dataset preprocessing")
-parser.add_argument("-v", "--version", type=str, default="260k", help="ChessReason dataset version, 260k|709k")
+parser = argparse.ArgumentParser(description="ROOK dataset preprocessing")
+parser.add_argument("-i", "--input", type=str, default="rook/rook_*.txt", help="ROOK dataset version txt-files")
+parser.add_argument("-s", "--seed", type=int, default=42, help="Random seed")
 #parser.add_argument("-s", "--shard_size", type=int, default=10**8, help="Size of each data shard in the output .bin files, in tokens")
 args = parser.parse_args()
 
+random.seed(args.seed)
 shard_size = 2**18
-name = "chessreason"
-local_dir = f"chessreason{args.version}"
+name = "rook"
+local_dir = "rook"
 DATA_CACHE_DIR = os.path.join(os.path.dirname(__file__), local_dir)
 
-with open(args.input, "r") as f:
-    ds = f.readlines()
+ds = []
+for fn in glob(args.input):
+    with open(fn, "r") as f:
+        ds += [l for l in f.readlines() if l.strip()]
+
+random.shuffle(ds)
 
 # init the tokenizer
 enc = tiktoken.get_encoding("gpt2")

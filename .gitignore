@@ -1,7 +1,5 @@
-data/*
-train/*
 dev/data/*.txt
-llm.c/*
+llm.c
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

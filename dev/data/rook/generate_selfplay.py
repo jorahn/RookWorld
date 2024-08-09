@@ -5,10 +5,10 @@ import chess.engine
 from datasets import load_dataset
 from tqdm import tqdm
 
-parser = argparse.ArgumentParser(description="ChessReasoner dataset generation from stockfish selfplay")
+parser = argparse.ArgumentParser(description="ROOK dataset generation from stockfish selfplay")
 parser.add_argument("-p", "--stockfish_path", type=str, help="Path to the stockfish binary")
-parser.add_argument("-n", "--number_games", type=int, default=500, help="Number of games to play")
-parser.add_argument("-o", "--output", type=str, default="chessreason.txt", help="Filename of the generated output dataset")
+parser.add_argument("-n", "--number_games", type=int, default=250, help="Number of games to play")
+parser.add_argument("-o", "--output", type=str, default="rook_selfplay.txt", help="Filename of the generated output dataset")
 parser.add_argument("-l", "--timelimit", type=float, default=0.1, help="Stockfish analysis time limit per position")
 parser.add_argument("-t", "--threads", type=int, default=-1, help="Number of threads to use for stockfish analysis. -1 = for one thread per CPU core.")
 args = parser.parse_args()

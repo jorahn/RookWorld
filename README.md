@@ -6,9 +6,10 @@ A chess-playing transformer model trained on a synthetic dataset with chain-of-t
 
 ## setup
 - download and unpack stockfish binary from [here](https://github.com/official-stockfish/Stockfish)
-- create and activate a clean environment
+- set env STOCKFISH_PATH to binary with `export $STOCKFISH_PATH=/path/to/stockfish-binary`
+- create and activate a clean python virtual environment / conda environment
 - clone this repo `git clone https://github.com/jorahn/rook.git`
-- cd into the repo folder and run `setup.sh`
+- cd into the repo folder `cd rook` and run `bash setup.sh`
   - this will clone llm.c at a specific commit
   - copies files for dataset generation, training and evaluation of ROOK into llm.c
 - finalize environment setup for llm.c with dependencies like cuda, cudnn and nccl as per llm.c docs
