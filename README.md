@@ -5,7 +5,7 @@
 A chess-playing transformer model trained on a synthetic dataset with chain-of-thought evaluation from Stockfish.
 
 ## setup
-- tested: linux (ubuntu 22.04), python 3.11, nvidia-gpu, cuda 12.4, cudnn 9.1, stockfish 16.1
+- tested: linux (ubuntu 22.04), python 3.11, nvidia-gpu, cuda 12.4, cudnn 9.3, stockfish 16.1
 - download and unpack stockfish binary from [here](https://github.com/official-stockfish/Stockfish)
 - set env STOCKFISH_PATH to binary with `export $STOCKFISH_PATH=/path/to/stockfish-binary`
 - create and activate a clean python virtual environment / conda environment
