@@ -16,8 +16,8 @@ A chess-playing transformer model trained on a synthetic dataset with chain-of-t
 - finalize environment setup for llm.c with dependencies like cuda, cudnn or cudnn-frontend and nccl as per llm.c docs
 - `bash run.sh` for 
   - basic data gen (~20k samples, half human and selfplay, ~30 mins on 6 cores)
-  - train minimal model on one GPU for 2500 steps with bs=1 to val-loss ~0.73
-  - convert to hf and run self-play eval (avg ~3.5 legal moves, with 260k samples -> 13 legal moves)
+  - train minimal model on one GPU for 2500 steps (2 epochs) with bs=1 to val-loss ~0.73
+  - convert model.bin to hf and run self-play eval (avg ~3.5 legal moves, with 260k samples -> 13 legal moves)
 
 ## generate dataset
 1. generate a text-dataset with stockfish (very cpu intense)
