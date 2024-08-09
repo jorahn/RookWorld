@@ -1,4 +1,6 @@
-# DeepChessReasoner
+# ROOK: Reasoning Over Organized Knowledge
+
+A chess-playing transformer model trained on a synthetic dataset with chain-of-thought evaluation from Stockfish.
 
 ## setup
 - download and unpack stockfish binary from [here](https://github.com/official-stockfish/Stockfish)
