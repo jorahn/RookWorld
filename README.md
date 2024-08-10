@@ -27,8 +27,8 @@ A chess-playing transformer model trained on a synthetic dataset with chain-of-t
 |   260k  |   18624 / 1  |   0.56   |         15.5         |
 |   709k  |   51481 / 1  |   0.59   |         19.2         |
 
-*different val-data, work in progress
-**comparisons: 14 moves after 2.4m examples [here](https://slatestarcodex.com/2020/01/06/a-very-unlikely-chess-game/)
+*different val-data, work in progress  
+**comparisons: 14 moves after 2.4m examples [here](https://slatestarcodex.com/2020/01/06/a-very-unlikely-chess-game/)  
 <img src="yolo.jpg" width="585" height="662">
 
 
