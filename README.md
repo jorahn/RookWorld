@@ -30,7 +30,7 @@ A chess-playing transformer model trained on a synthetic dataset with chain-of-t
 *different val-data, work in progress  
 **comparisons: 
 - 28 legal half-moves after 2.4m examples with GPT2-1.5B [src](https://x.com/theshawwn/status/1212619327347871744)  
-- BERT-style models (some pre-trained on FEN MLM) trained on next-move classification:
+- unpublished 2022: BERT-style models (some pre-trained on FEN MLM) trained on next-move classification:
 <img src="yolo.jpg" width="585" height="662">
 
 
