@@ -29,7 +29,7 @@ A chess-playing transformer model trained on a synthetic dataset with chain-of-t
 
 *different val-data, work in progress
 **comparisons: 14 moves after 2.4m examples [here](https://slatestarcodex.com/2020/01/06/a-very-unlikely-chess-game/)
-<img src="yolo.png" width="585" height="662">
+<img src="yolo.jpg" width="585" height="662">
 
 
 ## generate dataset
