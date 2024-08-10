@@ -16,21 +16,20 @@ A chess-playing transformer model trained on a synthetic dataset with chain-of-t
 - finalize environment setup for llm.c with dependencies like cuda, cudnn or cudnn-frontend and nccl as per llm.c docs
 - `bash run.sh` for 
   - basic data gen (~20k samples, half human and selfplay, ~30 mins on 6 cores)
-  - train minimal gpt2-small model on one GPU for 5000 steps (2 epochs) with bs=1 to val-loss ~0.73
+  - train minimal gpt2-small model on one GPU for 5000 steps (2 epochs) with bs=1 to val-loss ~0.83
   - convert model.bin to hf and run self-play eval (avg ~3.5 legal moves)
 
 ### data scaling & preliminary benchmarks
 
 | Samples | Steps/Epochs | Val-Loss | Selfplay Legal Half-Moves (Illegal %) |
 |---------|--------------|----------|---------------------------------------|
-|    20k  |    5000 / 2  |   0.73   |             3.5 (28%)                 |
-|   260k  |   18624 / 1  |   0.56   |           15.5 (6.5%)                 |
-|   709k  |   51481 / 1  |   0.59   |           19.2 (5.2%)                 |
+|    20k  |    5000 / 2  |  0.8268  |            3.5 (28.3%)                |
+|   260k  |   18752 / 1  |  0.6547  |           14.2 ( 7.0%)                |
+|   709k  |   51481 / 1  |  0.5875  |           17.7 ( 5.6%)                |
 
-*different val-data, work in progress  
-**comparisons: 
+*comparisons: 
 - 28 legal half-moves after 2.4m examples with GPT2-1.5B [src](https://x.com/theshawwn/status/1212619327347871744)  
-- unpublished 2022: BERT-style models (some pre-trained on FEN MLM) trained on next-move classification:
+- unpublished results 2022: BERT-style models (some pre-trained on FEN MLM) trained on next-move classification:
 <img src="yolo.jpg" width="585" height="662">
 
 
