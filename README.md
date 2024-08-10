@@ -26,7 +26,7 @@ A chess-playing transformer model trained on a synthetic dataset with chain-of-t
 |    20k  |    5000 / 2  |   0.73   |          3.5         |
 |   260k  |   18624 / 1  |   0.56   |         15.5         |
 |   709k  |   51481 / 1  |   0.59   |         19.2         |
-
+*different val-data, work in progress
 
 ## generate dataset
 1. generate a text-dataset with stockfish (very cpu intense)
