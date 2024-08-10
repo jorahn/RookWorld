@@ -28,7 +28,9 @@ A chess-playing transformer model trained on a synthetic dataset with chain-of-t
 |   709k  |   51481 / 1  |   0.59   |           19.2 (5.2%)            |
 
 *different val-data, work in progress  
-**comparisons: 14 moves after 2.4m examples [here](https://slatestarcodex.com/2020/01/06/a-very-unlikely-chess-game/)  
+**comparisons: 
+- 14 legal moves after 2.4m examples with GPT2-1.5B [src](https://x.com/theshawwn/status/1212619327347871744)  
+- BERT-style models (some pre-trained on FEN MLM) trained on next-move classification:
 <img src="yolo.jpg" width="585" height="662">
 
 
