@@ -27,7 +27,11 @@ A chess-playing transformer model trained on a synthetic dataset with chain-of-t
 |   260k  |   18752 / 1  |  0.6547  |           14.2 ( 7.0%)                |
 |   709k  |   51481 / 1  |  0.5875  |           17.7 ( 5.6%)                |
 
-*comparisons: 
+training:  
+<img src="train.jpg" width="940" height="566">
+
+
+preliminary benchmarks: 
 - 28 legal half-moves after 2.4m examples with GPT2-1.5B [src](https://x.com/theshawwn/status/1212619327347871744)  
 - unpublished results 2022: BERT-style models (some pre-trained on FEN MLM) trained on next-move classification:
 <img src="yolo.jpg" width="585" height="662">
