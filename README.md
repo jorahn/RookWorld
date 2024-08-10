@@ -19,7 +19,7 @@ A chess-playing transformer model trained on a synthetic dataset with chain-of-t
   - train minimal model on one GPU for 5000 steps (2 epochs) with bs=1 to val-loss ~0.73
   - convert model.bin to hf and run self-play eval (avg ~3.5 legal moves)
 
-### data scaling
+### data scaling & preliminary benchmarks
 
 | Samples | Steps/Epochs | Val-Loss | Selfplay Legal Moves |
 |---------|--------------|----------|----------------------|
