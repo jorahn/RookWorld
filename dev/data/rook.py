@@ -34,6 +34,13 @@ for fn in glob(args.input):
     with open(fn, "r") as f:
         ds += [l for l in f.readlines() if l.strip()]
 
+# remove exact duplicates & shuffle
+# TODO: maybe remove close duplicates
+#  - e.g. only difference is randomized move order
+#  - or slightly different eval score for one move
+# TODO: dont do this in-memory for large datasets
+
+ds = list(set(ds))
 random.shuffle(ds)
 
 # init the tokenizer
