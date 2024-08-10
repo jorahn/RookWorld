@@ -16,7 +16,7 @@ A chess-playing transformer model trained on a synthetic dataset with chain-of-t
 - finalize environment setup for llm.c with dependencies like cuda, cudnn or cudnn-frontend and nccl as per llm.c docs
 - `bash run.sh` for 
   - basic data gen (~20k samples, half human and selfplay, ~30 mins on 6 cores)
-  - train minimal model on one GPU for 5000 steps (2 epochs) with bs=1 to val-loss ~0.73
+  - train minimal gpt2-small model on one GPU for 5000 steps (2 epochs) with bs=1 to val-loss ~0.73
   - convert model.bin to hf and run self-play eval (avg ~3.5 legal moves)
 
 ### data scaling & preliminary benchmarks
@@ -46,3 +46,4 @@ A chess-playing transformer model trained on a synthetic dataset with chain-of-t
 - run `llm.c/dev/eval/export_hf.py` to convert model.bin to huggingface gpt2 safetensor + tokenizer
 - run `llm.c/dev/eval/rook_selfplay.py` to play the converted model against itself, observe number of moves before illegal move
 - run `llm.c/dev/eval/rook_analysis.py` to provide an FEN (e.g. from a human game) and get the model evaluation for it
+- WORK IN PROGRESS
