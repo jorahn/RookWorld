@@ -77,7 +77,7 @@ with mp.Pool(nprocs) as pool:
             progress_bar.update(len(tokens))
         else:
             # write the current shard and start a new one
-            split = "val" if (shard_index == 0 or args.eval_only) else "train"
+            split = "val" if args.eval_only else "train"
             filename = os.path.join(DATA_CACHE_DIR, f"{name}_{split}_{shard_index:06d}.bin")
             # split the document into whatever fits in this shard; the remainder goes to next one
             remainder = shard_size - token_count
@@ -92,6 +92,6 @@ with mp.Pool(nprocs) as pool:
 
     # write any remaining tokens as the last shard
     if token_count != 0:
-        split = "val" if (shard_index == 0 or args.eval_only) else "train"
+        split = "val" if args.eval_only else "train"
         filename = os.path.join(DATA_CACHE_DIR, f"{name}_{split}_{shard_index:06d}.bin")
         write_datafile(filename, all_tokens_np[:token_count])
