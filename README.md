@@ -21,15 +21,15 @@ A chess-playing transformer model trained on a synthetic dataset with chain-of-t
 
 ### data scaling & preliminary benchmarks
 
-| Samples | Steps/Epochs | Val-Loss | Selfplay Legal Moves (Illegal %) |
-|---------|--------------|----------|----------------------------------|
-|    20k  |    5000 / 2  |   0.73   |             3.5 (28%)            |
-|   260k  |   18624 / 1  |   0.56   |           15.5 (6.5%)            |
-|   709k  |   51481 / 1  |   0.59   |           19.2 (5.2%)            |
+| Samples | Steps/Epochs | Val-Loss | Selfplay Legal Half-Moves (Illegal %) |
+|---------|--------------|----------|---------------------------------------|
+|    20k  |    5000 / 2  |   0.73   |             3.5 (28%)                 |
+|   260k  |   18624 / 1  |   0.56   |           15.5 (6.5%)                 |
+|   709k  |   51481 / 1  |   0.59   |           19.2 (5.2%)                 |
 
 *different val-data, work in progress  
 **comparisons: 
-- 14 legal moves after 2.4m examples with GPT2-1.5B [src](https://x.com/theshawwn/status/1212619327347871744)  
+- 28 legal half-moves after 2.4m examples with GPT2-1.5B [src](https://x.com/theshawwn/status/1212619327347871744)  
 - BERT-style models (some pre-trained on FEN MLM) trained on next-move classification:
 <img src="yolo.jpg" width="585" height="662">
 
