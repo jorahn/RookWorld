@@ -11,7 +11,7 @@ A chess-playing transformer model trained on a synthetic dataset with chain-of-t
 - create and activate a clean python virtual environment / conda environment
 - clone this repo `git clone https://github.com/jorahn/rook.git`
 - cd into the repo folder `cd rook` and run `bash setup.sh`
-  - this will clone llm.c at a specific commit
+  - this will clone [llm.c](https://github.com/karpathy/llm.c) at a specific commit
   - copies files for dataset generation, training and evaluation of ROOK into llm.c
 - finalize environment setup for llm.c with dependencies like cuda, cudnn or cudnn-frontend and nccl as per llm.c docs
 - `bash run.sh` for 
