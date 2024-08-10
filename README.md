@@ -28,6 +28,9 @@ A chess-playing transformer model trained on a synthetic dataset with chain-of-t
 |   709k  |   51481 / 1  |   0.59   |         19.2         |
 
 *different val-data, work in progress
+**comparisons: 14 moves after 2.4m examples [here](https://slatestarcodex.com/2020/01/06/a-very-unlikely-chess-game/)
+<img src="yolo.png" width="585" height="662">
+
 
 ## generate dataset
 1. generate a text-dataset with stockfish (very cpu intense)
