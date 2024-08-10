@@ -20,6 +20,7 @@ from data_common import write_datafile
 parser = argparse.ArgumentParser(description="ROOK dataset preprocessing")
 parser.add_argument("-i", "--input", type=str, default="rook/rook_*.txt", help="ROOK dataset version txt-files")
 parser.add_argument("-s", "--seed", type=int, default=42, help="Random seed")
+parser.add_argument("-e", "--eval_only", type=bool, default=False, help="Write all samples in rool_valid.bin")
 #parser.add_argument("-s", "--shard_size", type=int, default=10**8, help="Size of each data shard in the output .bin files, in tokens")
 args = parser.parse_args()
 
@@ -76,7 +77,7 @@ with mp.Pool(nprocs) as pool:
             progress_bar.update(len(tokens))
         else:
             # write the current shard and start a new one
-            split = "val" if shard_index == 0 else "train"
+            split = "val" if (shard_index == 0 or args.eval_only) else "train"
             filename = os.path.join(DATA_CACHE_DIR, f"{name}_{split}_{shard_index:06d}.bin")
             # split the document into whatever fits in this shard; the remainder goes to next one
             remainder = shard_size - token_count
@@ -91,6 +92,6 @@ with mp.Pool(nprocs) as pool:
 
     # write any remaining tokens as the last shard
     if token_count != 0:
-        split = "val" if shard_index == 0 else "train"
+        split = "val" if (shard_index == 0 or args.eval_only) else "train"
         filename = os.path.join(DATA_CACHE_DIR, f"{name}_{split}_{shard_index:06d}.bin")
         write_datafile(filename, all_tokens_np[:token_count])
