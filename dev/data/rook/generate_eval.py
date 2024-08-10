@@ -20,7 +20,7 @@ print(f"running stockfish on {threads} threads in parallel")
 
 # load source dataset, either the full dataset or a slice, fail if the dataset is not found or slice invalid
 ds = []
-with open("eval_fens_1000.txt", "r") as f:
+with open("eval_fens_500.txt", "r") as f:
     for line in f:
         ds.append(line)
 
@@ -68,6 +68,7 @@ if os.path.exists(args.output):
 # dont parallelize this with dataset.map, as stockfish is already parallelized
 with open(args.output, "w") as f:
     for fen in tqdm(ds):
+        fen = fen.strip()
         moves, evals = get_stockfish_analysis(fen, time_limit=args.timelimit)
         formatted_sample = format_sample(fen, moves, evals)
         f.write(formatted_sample+"\n")
