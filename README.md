@@ -21,13 +21,13 @@ A chess-playing transformer model trained on a synthetic dataset with chain-of-t
 
 ### data scaling & preliminary benchmarks
 
-| Samples | Steps/Epochs | Val-Loss | Selfplay Legal Half-Moves (Illegal %) |
-|---------|--------------|----------|---------------------------------------|
-|    20k  |    5000 / 2  |  0.8268  |            3.5 (28.3%)                |
-|   260k  |   18752 / 1  |  0.6547  |           14.2 (7.0%)                 |
-|   709k  |   51481 / 1  |  0.5875  |           17.7 (5.6%)                 |
-|   709k  |  102962 / 2  |  0.5988  |           23.6 (4.2%)                 |
-|   709k  |  154443 / 3  |  0.5953  |           23.5 (4.3%)                 |
+| FEN Samples | Steps/Epochs | Val-Loss | Selfplay Legal Half-Moves (Illegal %) |
+|-------------|--------------|----------|---------------------------------------|
+|        20k  |    5000 / 2  |  0.8268  |            3.5 (28.3%)                |
+|       260k  |   18752 / 1  |  0.6547  |           14.2 (7.0%)                 |
+|       709k  |   51481 / 1  |  0.5875  |           17.7 (5.6%)                 |
+|       709k  |  102962 / 2  |  0.5988  |           23.6 (4.2%)                 |
+|       709k  |  154443 / 3  |  0.5953  |           23.5 (4.3%)                 |
 
 training:  
 <img src="train.jpg" width="940" height="566">
@@ -36,7 +36,7 @@ training:
 
 
 preliminary benchmarks: 
-- 28 legal half-moves after 2.4m examples with GPT2-1.5B [src](https://x.com/theshawwn/status/1212619327347871744)  
+- 28 legal half-moves after 2.4m examples (presumably full games) with GPT2-1.5B [src](https://x.com/theshawwn/status/1212619327347871744)  
 - unpublished results 2022: BERT-style models (some pre-trained on FEN MLM) trained on next-move classification:
 <img src="yolo.jpg" width="585" height="662">
 
