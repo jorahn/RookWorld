@@ -32,7 +32,7 @@ A chess-playing transformer model trained on a synthetic dataset with chain-of-t
 training:  
 <img src="train.jpg" width="940" height="566">
 
-<img src="train_2e3e.jpg" width="940" height="447">
+<img src="train_2e3e.png" width="940" height="447">
 
 
 preliminary benchmarks: 
