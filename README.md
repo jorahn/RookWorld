@@ -37,7 +37,7 @@ training:
 
 preliminary benchmarks: 
 - 28 legal half-moves after 2.4m examples (presumably full games) with GPT2-1.5B [src](https://x.com/theshawwn/status/1212619327347871744)  
-- unpublished results 2022: BERT-style models (some pre-trained on FEN MLM) trained on next-move classification:
+- unpublished results 2022: BERT-style models (some pre-trained on FEN MLM) trained on next-move (text) classification:
 <img src="yolo.jpg" width="585" height="662">
 
 
