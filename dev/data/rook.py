@@ -20,29 +20,44 @@ from data_common import write_datafile
 parser = argparse.ArgumentParser(description="ROOK dataset preprocessing")
 parser.add_argument("-i", "--input", type=str, default="rook/rook_*.txt", help="ROOK dataset version txt-files")
 parser.add_argument("-s", "--seed", type=int, default=42, help="Random seed")
-parser.add_argument("-e", "--eval_only", type=bool, default=False, help="Write all samples in rool_valid.bin")
+parser.add_argument("-e", "--eval_only", type=bool, default=False, help="Create fixed validation set rook_val_500.bin")
 #parser.add_argument("-s", "--shard_size", type=int, default=10**8, help="Size of each data shard in the output .bin files, in tokens")
 args = parser.parse_args()
 
 random.seed(args.seed)
-shard_size = 2**18
+shard_size = 2**18 
+# for now only small datasets
+# originally reduced to create a suitable small validation set, maybe increase back to 2**20
 name = "rook"
 local_dir = "rook"
 DATA_CACHE_DIR = os.path.join(os.path.dirname(__file__), local_dir)
 
+# TODO: dont do this in-memory for large datasets
+
 ds = []
-for fn in glob(args.input):
+for n, fn in enumerate(glob(args.input)):
     with open(fn, "r") as f:
         ds += [l for l in f.readlines() if l.strip()]
+print(f"{len(ds):,} samples extracted from {n} source files")
 
-# remove exact duplicates & shuffle
+# remove exact duplicates
+ds = set(ds)
+print(f"{len(ds):,} samples after exact deduplication")
 # TODO: maybe remove close duplicates
 #  - e.g. only difference is randomized move order
 #  - or slightly different eval score for one move
-# TODO: dont do this in-memory for large datasets
 
-ds = list(set(ds))
+# avoid eval contamination
+if not args.eval_only:
+    with open("rook/rook_val_500.txt.bak", "r") as f:
+        ds_val = set([l.strip() for l in f.readlines()])
+    ds = ds - ds_val
+    print(f"{len(ds):,} samples after eval decontamination")
+
+# shuffle
+ds = list(ds)
 random.shuffle(ds)
+
 
 # init the tokenizer
 enc = tiktoken.get_encoding("gpt2")
