@@ -17,7 +17,7 @@ A chess-playing transformer model trained on a synthetic dataset with chain-of-t
 - `bash run.sh` for 
   - basic data gen (~20k samples, half human and selfplay, ~30 mins on 6 cores)
   - train minimal gpt2-small model on one GPU for 5000 steps (2 epochs) with bs=1 to val-loss ~0.83
-  - convert model.bin to hf and run self-play eval (avg ~3.5 legal moves)
+  - convert model.bin to hf and run self-play eval (avg ~3.5 legal half-moves in 50 self-play games)
 
 ### data scaling & preliminary benchmarks
 
