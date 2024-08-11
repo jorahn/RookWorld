@@ -27,9 +27,12 @@ A chess-playing transformer model trained on a synthetic dataset with chain-of-t
 |   260k  |   18752 / 1  |  0.6547  |           14.2 (7.0%)                 |
 |   709k  |   51481 / 1  |  0.5875  |           17.7 (5.6%)                 |
 |   709k  |  102962 / 2  |  0.5988  |           23.6 (4.2%)                 |
+|   709k  |  154443 / 3  |  0.5953  |           23.5 (4.3%)                 |
 
 training:  
 <img src="train.jpg" width="940" height="566">
+
+<img src="train_2e3e.jpg" width="940" height="447">
 
 
 preliminary benchmarks: 
