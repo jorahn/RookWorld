@@ -24,8 +24,9 @@ A chess-playing transformer model trained on a synthetic dataset with chain-of-t
 | Samples | Steps/Epochs | Val-Loss | Selfplay Legal Half-Moves (Illegal %) |
 |---------|--------------|----------|---------------------------------------|
 |    20k  |    5000 / 2  |  0.8268  |            3.5 (28.3%)                |
-|   260k  |   18752 / 1  |  0.6547  |           14.2 ( 7.0%)                |
-|   709k  |   51481 / 1  |  0.5875  |           17.7 ( 5.6%)                |
+|   260k  |   18752 / 1  |  0.6547  |           14.2 (7.0%)                 |
+|   709k  |   51481 / 1  |  0.5875  |           17.7 (5.6%)                 |
+|   709k  |  102962 / 2  |  0.5988  |           23.6 (4.2%)                 |
 
 training:  
 <img src="train.jpg" width="940" height="566">
