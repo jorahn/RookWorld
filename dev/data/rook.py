@@ -21,8 +21,11 @@ parser = argparse.ArgumentParser(description="ROOK dataset preprocessing")
 parser.add_argument("-i", "--input", type=str, default="rook/rook_*.txt", help="ROOK dataset version txt-files")
 parser.add_argument("-s", "--seed", type=int, default=42, help="Random seed")
 parser.add_argument("-e", "--eval_only", type=bool, default=False, help="Create fixed validation set rook_val_500.bin")
+parser.add_argument("-c", "--clear", type=str, default="", help="Insert '-' instead of actual data into [M|E] fields")
+parser.add_argument("-d", "--debug", type=bool, default=False, help="Write to stdout instead of to file")
 #parser.add_argument("-s", "--shard_size", type=int, default=10**8, help="Size of each data shard in the output .bin files, in tokens")
 args = parser.parse_args()
+
 
 random.seed(args.seed)
 shard_size = 2**18 
@@ -35,14 +38,38 @@ DATA_CACHE_DIR = os.path.join(os.path.dirname(__file__), local_dir)
 # TODO: dont do this in-memory for large datasets
 
 ds = []
-for n, fn in enumerate(glob(args.input)):
+n = 0
+for fn in glob(args.input):
+    n += 1
     with open(fn, "r") as f:
         ds += [l for l in f.readlines() if l.strip()]
 print(f"{len(ds):,} samples extracted from {n} source files")
 
+# make sure all samples contain all parts
+ds = [e for e in ds if all(["P: " in e, "M: " in e, "E: " in e, "B: " in e])]
+print(f"{len(ds):,} samples after removing invalid samples")
+
+# clear selected fields
+if "M" in args.clear or "E" in args.clear:
+    for n, e in enumerate(ds):
+        if args.debug: print(e)
+        try:
+            p1, p2 = e.split("M: ", 1)
+            p2, p3 = p2.split("E: ", 1)
+            p3, p4 = p3.split("B: ", 1)
+            if "M" in args.clear: p2 = "-"*len(p2)
+            if "E" in args.clear: p3 = "-"*len(p3)
+            ds[n] = f"{p1}M: {p2}E: {p3}B: {p4}"
+            if args.debug: print(ds[n])
+        except Exception as err:
+            print("failed processing", e)
+            print("error", err)
+
+
 # remove exact duplicates
 ds = set(ds)
 print(f"{len(ds):,} samples after exact deduplication")
+
 # TODO: maybe remove close duplicates
 #  - e.g. only difference is randomized move order
 #  - or slightly different eval score for one move
@@ -98,7 +125,8 @@ with mp.Pool(nprocs) as pool:
             remainder = shard_size - token_count
             progress_bar.update(remainder)
             all_tokens_np[token_count:token_count+remainder] = tokens[:remainder]
-            write_datafile(filename, all_tokens_np)
+            if args.debug: print(all_tokens_np) 
+            else: write_datafile(filename, all_tokens_np)
             shard_index += 1
             progress_bar = None
             # populate the next shard with the leftovers of the current doc
@@ -109,4 +137,5 @@ with mp.Pool(nprocs) as pool:
     if token_count != 0:
         split = "val" if args.eval_only else "train"
         filename = os.path.join(DATA_CACHE_DIR, f"{name}_{split}_{shard_index:06d}.bin")
-        write_datafile(filename, all_tokens_np[:token_count])
+        if args.debug: print(all_tokens_np[:token_count])
+        else: write_datafile(filename, all_tokens_np[:token_count])
