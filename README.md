@@ -1,4 +1,4 @@
-<img src="logo.png" width="150" height="150">
+<div align="center"><img src="logo.png" width="150" height="150"></div>
 
 # ROOK: Reasoning Over Organized Knowledge
 
@@ -29,19 +29,19 @@ A chess-playing transformer model trained on a synthetic dataset with chain-of-t
 |        260k  |   18752 (1)    |  0.6547  |       3.8%         |       10.6%         |           14.2 (7.0%)                 |
 |        709k  |   51481 (1)    |**0.5875**|       7.4%         |       19.3%         |           17.7 (5.6%)                 |
 |        709k  |  102962 (2)    |  0.5988  |       7.8%         |       25.0%         |         **23.6 (4.2%)**               |
-|        709k  |  154443 (3)    |  0.5953  |     **8.8%**       |     **28.2%**       |           23.5 (4.3%)                 |
+|        709k  |  154443 (3)    |  0.5953  |     **8.8%**       |     **28.2%**       |         **23.5 (4.3%)**               |
 | 679k (no ME) |   32323 (1)    |  6.3259  |       8.4%         |         -           |            9.4 (10.7%)                |
 
 training:  
-<img src="train.jpg" width="940" height="566">
+<div align="center"><img src="train.jpg" width="940" height="566"></div>
 
-<img src="train_2e3e.png" width="940" height="447">
+<div align="center"><img src="train_2e3e.png" width="940" height="447"></div>
 
 
 preliminary benchmarks: 
 - 28 legal half-moves after 2.4m examples (presumably full games) with GPT2-1.5B [src](https://x.com/theshawwn/status/1212619327347871744)  
 - unpublished results 2022: BERT-style models (some pre-trained on FEN MLM) trained on next-move (text) classification:
-<img src="yolo.jpg" width="585" height="662">
+<div align="center"><img src="yolo.jpg" width="585" height="662"></div>
 
 
 ## generate dataset
@@ -56,7 +56,6 @@ preliminary benchmarks:
 
 ## evaluation
 - run `llm.c/dev/eval/export_hf.py` to convert model.bin to huggingface gpt2 safetensor + tokenizer
+- run `llm.c/dev/eval/rook_accuracy.py` to evaluate the converted model move accuracy against the validation dataset
 - run `llm.c/dev/eval/rook_selfplay.py` to play the converted model against itself, observe number of moves before illegal move
-- run `llm.c/dev/eval/rook_accuracy.py` to evaluate move accuracy against the validation dataset
 - run `llm.c/dev/eval/rook_analysis.py` to provide an FEN (e.g. from a human game) and get the model evaluation for it
-- WORK IN PROGRESS
