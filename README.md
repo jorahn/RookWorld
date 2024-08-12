@@ -17,18 +17,20 @@ A chess-playing transformer model trained on a synthetic dataset with chain-of-t
 - `bash run.sh` for 
   - basic data gen (~20k samples, half human and selfplay, ~30 mins on 6 cores)
   - train minimal gpt2-small model on one GPU for 5000 steps (2 epochs) with bs=1 to val-loss ~0.83
-  - convert model.bin to hf and run self-play eval (avg ~3.5 legal half-moves in 50 self-play games)
+  - convert model.bin to hf
+  - run self-play eval (avg ~3.5 legal half-moves in 50 self-play games)
+  - run accuracy eval (32% invalid completions, 16% legal best moves, 0.6% correct best moves, 17.6% legal top 5 moves, 1.4% correct top 5 moves)
 
 ### data scaling & preliminary benchmarks
 
-|  FEN Samples | Steps (Epochs) | Val-Loss | Selfplay Legal Half-Moves (Illegal %) |
-|--------------|----------------|----------|---------------------------------------|
-|         20k  |    5000 (2)    |  0.8268  |            3.5 (28.3%)                |
-|        260k  |   18752 (1)    |  0.6547  |           14.2 (7.0%)                 |
-|        709k  |   51481 (1)    |  0.5875  |           17.7 (5.6%)                 |
-|        709k  |  102962 (2)    |  0.5988  |           23.6 (4.2%)                 |
-|        709k  |  154443 (3)    |  0.5953  |           23.5 (4.3%)                 |
-| 679k (no ME) |   32323 (1)    |  6.3259  |            9.4 (10.7%)                |
+|  FEN Samples | Steps (Epochs) | Val-Loss | Selfplay Legal Half-Moves (Illegal %) | Best Move Accuracy | Top 5 Move Accuracy |
+|--------------|----------------|----------|---------------------------------------|--------------------|---------------------|
+|         20k  |    5000 (2)    |  0.8268  |            3.5 (28.3%)                |       0.6%         |        1.4%         |
+|        260k  |   18752 (1)    |  0.6547  |           14.2 (7.0%)                 |       3.8%         |       10.6%         |
+|        709k  |   51481 (1)    |  0.5875  |           17.7 (5.6%)                 |       7.4%         |       19.3%         |
+|        709k  |  102962 (2)    |  0.5988  |           23.6 (4.2%)                 |       7.8%         |       25.0%         |
+|        709k  |  154443 (3)    |  0.5953  |           23.5 (4.3%)                 |       8.8%         |       28.2%         |
+| 679k (no ME) |   32323 (1)    |  6.3259  |            9.4 (10.7%)                |       8.4%         |         -           |
 
 training:  
 <img src="train.jpg" width="940" height="566">
@@ -55,5 +57,6 @@ preliminary benchmarks:
 ## evaluation
 - run `llm.c/dev/eval/export_hf.py` to convert model.bin to huggingface gpt2 safetensor + tokenizer
 - run `llm.c/dev/eval/rook_selfplay.py` to play the converted model against itself, observe number of moves before illegal move
+- run `llm.c/dev/eval/rook_accuracy.py` to evaluate move accuracy against the validation dataset
 - run `llm.c/dev/eval/rook_analysis.py` to provide an FEN (e.g. from a human game) and get the model evaluation for it
 - WORK IN PROGRESS
