@@ -18,8 +18,9 @@ A chess-playing transformer model trained on a synthetic dataset with chain-of-t
   - basic data gen (~20k samples, half human and selfplay, ~30 mins on 6 cores)
   - train minimal gpt2-small model on one GPU for 5000 steps (2 epochs) with bs=1 to val-loss ~0.83
   - convert model.bin to hf
-  - run self-play eval (avg ~3.5 legal half-moves in 50 self-play games with sampling: topk=5, temp=0.6)
   - run accuracy eval (32% invalid completions, 16% legal best moves, 0.6% correct best moves, 17.6% legal top 5 moves, 1.4% correct top 5 moves with greedy decoding)
+  - WIP: run match against stockfish level 0
+  - run self-play eval (avg ~3.5 legal half-moves in 50 self-play games with sampling: topk=5, temp=0.6)
 
 ### data scaling & preliminary benchmarks
 
