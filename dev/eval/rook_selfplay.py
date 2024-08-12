@@ -13,6 +13,9 @@ parser.add_argument("-t", "--temp", type=float, default=0.6, help="Sampling temp
 parser.add_argument("-k", "--topk", type=int, default=5, help="Sampling top-k")
 args = parser.parse_args()
 
+if args.greedy:
+    print("Greedy decoding - this will result in the same moves played for every game")
+
 p = pipeline("text-generation", model=args.model_path, device="cuda", torch_dtype=torch.bfloat16)
 counters = []
 for _ in tqdm(range(args.num_games)):
