@@ -18,19 +18,19 @@ A chess-playing transformer model trained on a synthetic dataset with chain-of-t
   - basic data gen (~20k samples, half human and selfplay, ~30 mins on 6 cores)
   - train minimal gpt2-small model on one GPU for 5000 steps (2 epochs) with bs=1 to val-loss ~0.83
   - convert model.bin to hf
-  - run self-play eval (avg ~3.5 legal half-moves in 50 self-play games)
-  - run accuracy eval (32% invalid completions, 16% legal best moves, 0.6% correct best moves, 17.6% legal top 5 moves, 1.4% correct top 5 moves)
+  - run self-play eval (avg ~3.5 legal half-moves in 50 self-play games with sampling: topk=5, temp=0.6)
+  - run accuracy eval (32% invalid completions, 16% legal best moves, 0.6% correct best moves, 17.6% legal top 5 moves, 1.4% correct top 5 moves with greedy decoding)
 
 ### data scaling & preliminary benchmarks
 
-|  FEN Samples | Steps (Epochs) | Val-Loss | Selfplay Legal Half-Moves (Illegal %) | Best Move Accuracy | Top 5 Move Accuracy |
-|--------------|----------------|----------|---------------------------------------|--------------------|---------------------|
-|         20k  |    5000 (2)    |  0.8268  |            3.5 (28.3%)                |       0.6%         |        1.4%         |
-|        260k  |   18752 (1)    |  0.6547  |           14.2 (7.0%)                 |       3.8%         |       10.6%         |
-|        709k  |   51481 (1)    |  0.5875  |           17.7 (5.6%)                 |       7.4%         |       19.3%         |
-|        709k  |  102962 (2)    |  0.5988  |           23.6 (4.2%)                 |       7.8%         |       25.0%         |
-|        709k  |  154443 (3)    |  0.5953  |           23.5 (4.3%)                 |       8.8%         |       28.2%         |
-| 679k (no ME) |   32323 (1)    |  6.3259  |            9.4 (10.7%)                |       8.4%         |         -           |
+|  FEN Samples | Steps (Epochs) | Val-Loss | Best Move Accuracy | Top 5 Move Accuracy | Selfplay Legal Half-Moves (Illegal %) |
+|--------------|----------------|----------|--------------------|---------------------|---------------------------------------|
+|         20k  |    5000 (2)    |  0.8268  |       0.6%         |        1.4%         |            3.5 (28.3%)                |
+|        260k  |   18752 (1)    |  0.6547  |       3.8%         |       10.6%         |           14.2 (7.0%)                 |
+|        709k  |   51481 (1)    |  0.5875  |       7.4%         |       19.3%         |           17.7 (5.6%)                 |
+|        709k  |  102962 (2)    |  0.5988  |       7.8%         |       25.0%         |           23.6 (4.2%)                 |
+|        709k  |  154443 (3)    |  0.5953  |       8.8%         |       28.2%         |           23.5 (4.3%)                 |
+| 679k (no ME) |   32323 (1)    |  6.3259  |       8.4%         |         -           |            9.4 (10.7%)                |
 
 training:  
 <img src="train.jpg" width="940" height="566">
