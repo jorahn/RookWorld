@@ -1,4 +1,6 @@
 dev/data/**/*.txt
+dev/data/eval/pgn*
+dev/data/eval/*.pgn
 llm.c
 
 # Byte-compiled / optimized / DLL files
