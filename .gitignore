@@ -1,4 +1,5 @@
 dev/data/**/*.txt
+dev/data/**/*.json
 dev/data/eval/pgn*
 dev/data/eval/*.pgn
 llm.c

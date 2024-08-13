@@ -12,3 +12,6 @@ pip install -r requirements.txt
 
 cd dev/
 bash download_starter_pack.sh
+
+cd data
+python bb-cio.py
