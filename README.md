@@ -58,6 +58,7 @@ preliminary benchmarks:
 
 ## evaluation
 - run `llm.c/dev/eval/export_hf.py` to convert model.bin to huggingface gpt2 safetensor + tokenizer
+- run `llm.c/dev/eval/rook_bb-cio.py` to evaluate against BIG-bench Checkmate in One task
 - run `llm.c/dev/eval/rook_accuracy.py` to evaluate the converted model move accuracy against the validation dataset
 - run `llm.c/dev/eval/rook_selfplay.py` to play the converted model against itself, observe number of moves before illegal move
 - run `llm.c/dev/eval/rook_vs_stockfish.py` to play the converted model against Stockfish 16.1 (level 0 or higher) - currently it loses all games due to invalid moves or checkmate
