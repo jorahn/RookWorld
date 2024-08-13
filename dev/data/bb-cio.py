@@ -12,3 +12,5 @@ def download_file(url, filename):
 
 os.makedirs("bb-cio", exist_ok=True)
 download_file(URL, "bb-cio/task.json")
+
+# TODO: convert to (FEN, Target-UCI) dataset
