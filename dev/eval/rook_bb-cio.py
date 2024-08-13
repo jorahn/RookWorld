@@ -24,10 +24,12 @@ if args.batch_size > 1:
     p.tokenizer.padding_side = "left"
     p.tokenizer.pad_token_id = p.model.config.eos_token_id
     
+    print("WARNING: generating with batch_size > 1 leads to slightly worse results")
     # TODO
     # with batch_size > 1, the model will generate different completions for the same prompt, vs batch_size=1
     # even when setting torch.manual_seed()
     # this generally reduces the accurady in this benchmark, need to investigate further
+    # https://huggingface.co/docs/transformers/generation_strategies#greedy-search
     # could this be related to padding in batches?
     # for now, use batch_size=1
 else:
