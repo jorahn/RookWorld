@@ -12,7 +12,9 @@ parser.add_argument("-k", "--topk", type=int, default=5, help="Sampling top-k, o
 args = parser.parse_args()
 
 p = pipeline("text-generation", model=args.model_path, device="cuda", torch_dtype=torch.bfloat16)
-fen = input("FEN:")
+
+print("ROOK model manual position analysis")
+fen = input("FEN: ")
 board = chess.Board(fen)
 
 if args.greedy:

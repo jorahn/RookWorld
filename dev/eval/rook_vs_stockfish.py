@@ -19,6 +19,8 @@ parser.add_argument("-l", "--timelimit", type=float, default=0.1, help="Stockfis
 parser.add_argument("-t", "--threads", type=int, default=-1, help="Number of threads to use for stockfish analysis. -1 = for one thread per CPU core.")
 args = parser.parse_args()
 
+print("ROOK model win/loss/draw evaluation against Stockfish")
+
 # instantiate the stockfish engine, configure it to use all but one core, fail if the stockfish path is not provided
 engine = chess.engine.SimpleEngine.popen_uci(args.stockfish_path)
 threads = max(1, psutil.cpu_count(logical=False)) if args.threads == -1 else args.threads

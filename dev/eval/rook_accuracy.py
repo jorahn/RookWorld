@@ -18,6 +18,8 @@ p = pipeline("text-generation", model=args.model_path, device="cuda", torch_dtyp
 with open(args.data_path, "r") as f:
     ds = [l for l in f.readlines() if l.strip()]
 
+print("evaluating ROOK model on validation dataset (illegal moves and accuracy)")
+
 stats = {
     "total": 0, 
     "best_move_legal": [],

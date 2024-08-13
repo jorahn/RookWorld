@@ -13,6 +13,8 @@ parser.add_argument("-t", "--temp", type=float, default=0.6, help="Sampling temp
 parser.add_argument("-k", "--topk", type=int, default=5, help="Sampling top-k")
 args = parser.parse_args()
 
+print("ROOK model self-play evaluation for illegal moves and completed games")
+
 if args.greedy:
     print("Greedy decoding - this will result in the same moves played for every game")
 

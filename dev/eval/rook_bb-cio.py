@@ -52,4 +52,5 @@ def run_task():
             stats["correct"] += 1
     return stats
 
+print("evaluating ROOK model on Google Big Bench Checkmate in One Task")
 print(run_task())
