@@ -15,7 +15,7 @@ python export_hf.py --input ../../log_gpt2_124M_rook/model_00005000.bin --output
 python rook_accuracy.py -g --model_path ../../log_gpt2_124M_rook/rook_gpt2_124M_hf/ -d ../data/rook/rook_val_500.txt.bak
 
 # run Google Big Bench Checkmate in One Benchmark
-python rook_bb-cio.py --model_path ../../log_gpt2_124M_rook/rook_gpt2_124M_hf/
+python rook_bb-cio.py -g --model_path ../../log_gpt2_124M_rook/rook_gpt2_124M_hf/
 
 # play 50 games with greedy decoding vs stockfish at strength level 0 and 50ms time limit per move
 python rook_vs_stockfish.py -n 50 --model_path ../../log_gpt2_124M_rook/rook_gpt2_124M_hf/ -g -p $STOCKFISH_PATH -s 0 -l 0.05
