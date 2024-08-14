@@ -157,7 +157,7 @@ def evaluate(model_type, device):
 if __name__ == "__main__":
     with open("bb-cio/dataset.jsonl", "w") as file:
         for ex in iterate_examples():
-            file.write(ex+"\n")
+            file.write(json.dumps(ex)+"\n")
 
     #import argparse
     #parser = argparse.ArgumentParser()
