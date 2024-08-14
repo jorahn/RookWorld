@@ -62,6 +62,8 @@ def render_example(example):
     # gather up all the tokens
     ctx_tokens = enc.encode(ctx)
     data["ctx_tokens"] = ctx_tokens
+    # TODO generate CoT-continuation from model until "B: "
+
     tok_rows = []
     mask_rows = []
     for end in endings:
@@ -80,13 +82,26 @@ def render_example(example):
 
     return data, tokens, mask, label
 
-def convert_chess_to_strings(example):
+def convert_chess_to_strings(example, multiple_choice_options=4):
     game = chess.pgn.read_game(io.StringIO(example["input"]))
     board = game.board()
     for move in game.mainline_moves(): board.push(move)        
     ctx = board.fen()
     target = board.parse_san(example["target"]).uci()
-    return {"ctx": ctx, "label": target}
+    
+    # select multiple_choice_options - 1 random entries 
+    # from example["target_scores"] = list({SAN: score (0|1)})
+    # where score == 0 and return them as endings
+    endings = []
+    for move, score in example["target_scores"].items():
+        if score == 0:
+            endings.append(board.parse_san(move).uci())
+    endings = np.random.choice(endings, min(multiple_choice_options-1, 
+                                            len(endings)), replace=False).tolist()
+    endings.append(target)
+    np.random.shuffle(endings)
+    label = endings.index(target)
+    return {"ctx": ctx, "label": label, "endings": endings}
 
 def iterate_examples():
     # there are 3,500 examples in total in val
@@ -94,10 +109,11 @@ def iterate_examples():
     with open(os.path.join(DATA_CACHE_DIR, f"task.json"), "r") as f:
         task = json.load(f)
     for ex in task["examples"]:
-        yield convert_chess_to_strings(ex)
+        if ex:
+            yield convert_chess_to_strings(ex)
 
 @torch.no_grad()
-def evaluate(model_type, device):
+def evaluate(model_type, device, n_samples=-1):
 
     torch.set_float32_matmul_precision('high') # use tf32
 
@@ -110,6 +126,7 @@ def evaluate(model_type, device):
     num_correct = 0
     num_total = 0
     for example in iterate_examples():
+        if n_samples > 0 and num_total >= n_samples: break
         data, tokens, mask, label = render_example(example)
         datas.append(data)
         tokens = tokens.to(device)
@@ -151,17 +168,18 @@ def evaluate(model_type, device):
             print(f"predicted: {pred_norm}, actual: {label}")
 
     # now write the data to a .bin file
-    filename = os.path.join(DATA_CACHE_DIR, f"hellaswag_val.bin")
+    filename = os.path.join(DATA_CACHE_DIR, f"bb-cio_val.bin")
     write_evalfile(filename, datas)
 
 if __name__ == "__main__":
-    with open("bb-cio/dataset.jsonl", "w") as file:
-        for ex in iterate_examples():
-            file.write(json.dumps(ex)+"\n")
+    #with open("bb-cio/dataset.jsonl", "w") as file:
+    #    for ex in iterate_examples():
+    #        file.write(json.dumps(ex)+"\n")
 
-    #import argparse
-    #parser = argparse.ArgumentParser()
-    #parser.add_argument("-m", "--model_type", type=str, default="gpt2", help="the model type to use")
-    #parser.add_argument("-d", "--device", type=str, default="cuda", help="the device to use")
-    #args = parser.parse_args()
-    #evaluate(args.model_type, args.device)
+    import argparse
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-m", "--model_type", type=str, default="gpt2", help="the model type to use")
+    parser.add_argument("-d", "--device", type=str, default="cuda", help="the device to use")
+    parser.add_argument("-n", "--n_samples", type=int, default=-1, help="Max number of samples to evaluate")
+    args = parser.parse_args()
+    evaluate(args.model_type, args.device, args.n_samples)
