@@ -1,5 +1,5 @@
 """
-ChessReason dataset
+ROOK dataset
 
 example doc to highlight the structure of the dataset (newline delimited text file):
 
