@@ -26,14 +26,15 @@ A chess-playing transformer model trained on a synthetic dataset with chain-of-t
 
 ### data scaling & preliminary benchmarks
 
-|  FEN Samples | Steps (Epochs) | Val-Loss | [BIG-bench Mate in One](https://github.com/google/BIG-bench/tree/main/bigbench/benchmark_tasks/checkmate_in_one) Accuracy | Best Move Accuracy | Top 5 Move Accuracy | Selfplay Legal Half-Moves (Illegal %) |
+| FEN Samples  | Steps (Epochs) | Val-Loss | [BIG-bench Mate in One](https://github.com/google/BIG-bench/tree/main/bigbench/benchmark_tasks/checkmate_in_one) Accuracy | Best Move Accuracy | Top 5 Move Accuracy | Selfplay Legal Half-Moves (Illegal %) |
 |--------------|----------------|----------|-------------------------------|--------------------|---------------------|---------------------------------------|
-|         20k  |    5,000 (2)   |  0.8268  |              0,0%             |       0.6%         |        1.4%         |            3.5 (28.3%)                |
-|        260k  |   18,752 (1)   |  0.6547  |              4.7%             |       3.8%         |       10.6%         |           14.2 (7.0%)                 |
-|        709k  |   51,481 (1)   |**0.5875**|              4.8%             |       7.4%         |       19.3%         |           17.7 (5.6%)                 |
-|        709k  |  102,962 (2)   |  0.5988  |              5.5%             |       7.8%         |       25.0%         |         **23.6 (4.2%)**               |
-|        709k  |  154,443 (3)   |  0.5953  |            **7.0%**           |     **8.8%**       |     **28.2%**       |         **23.5 (4.3%)**               |
-| 679k (no ME) |   32,323 (1)   |  6.3259  |              4.1%             |       8.4%         |         -           |            9.4 (10.7%)                |
+| 20k          | 5,000 (2)      |  0.8268  |   0.0%                        |   0.6%             |    1.4%             |    3.5 (28.3%)                        |
+| 260k         | 18,752 (1)     |  0.6547  |   4.7%                        |   3.8%             |   10.6%             |   14.2 (7.0%)                         |
+| 709k         | 51,481 (1)     |**0.5875**|   4.8%                        |   7.4%             |   19.3%             |   17.7 (5.6%)                         |
+| 709k         | 102,962 (2)    |  0.5988  |   5.5%                        |   7.8%             |   25.0%             | **23.6 (4.2%)**                       |
+| 709k         | 154,443 (3)    |  0.5953  | **7.0%**                      | **8.8%**           | **28.2%**           | **23.5 (4.3%)**                       |
+| 679k (no ME) | 32,323 (1)     |  6.3259  |   4.1%                        |   8.4%             |   -                 |    9.4 (10.7%)                        |
+| 679k (no M)  | 32,323 (1)     |  2.9636  |   4.8%                        |   7.0%             |   -                 |   10.1 (9.9%)                         |
 
 training:  
 <div align="center"><img src="train.jpg" width="940" height="566"></div>
