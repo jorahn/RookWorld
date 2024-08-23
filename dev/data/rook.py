@@ -28,7 +28,7 @@ args = parser.parse_args()
 
 
 random.seed(args.seed)
-shard_size = 2**18 
+shard_size = 2**20 
 # for now only small datasets
 # originally reduced to create a suitable small validation set, maybe increase back to 2**20
 name = "rook"
