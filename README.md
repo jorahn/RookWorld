@@ -38,6 +38,8 @@ A chess-playing transformer model trained on a synthetic dataset with chain-of-t
 | 5M           | 11,646 (1)     |  0.5779  |   9.0%                        |  12.0%             |   30.6%             |   28.8 (3.5%)                         |
 | 5M           | 34,932 (3)     |**0.5629**| **11.5%**                     |**13.4%**           | **39.6%**           | **41.4 (2.4%)**                       |
 
+*1 FEN sample ~150 Tokens -> ROOK 5M ~770M Tokens
+
 training:  
 <div align="center"><img src="train.jpg" width="940" height="566"></div>
 
