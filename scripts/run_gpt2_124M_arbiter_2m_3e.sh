@@ -7,7 +7,7 @@
 
 make train_gpt2cu USE_CUDNN=1
 out_dir="log_gpt2_124M_arbiter_2m_3e"
-done_file="$out_dir/DONE_000034932"
+done_file="$out_dir/DONE_000012762"
 
 # in case the training stalls or crashes, loop to resume (-y 1)
 while true; do
@@ -35,7 +35,7 @@ while true; do
                 -q 0.0 \
                 -u 500 \
                 -y 1 \
-                -x -1 \
+                -x 12762 \
                 -e "d12"
 
     sleep 1
