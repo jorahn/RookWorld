@@ -7,7 +7,7 @@
 
 make train_gpt2cu USE_CUDNN=1
 out_dir="log_gpt2_124M_rook_5m_3e_lr1e4"
-done_file="$out_dir/DONE_000034932"
+done_file="$out_dir/DONE_00034932"
 
 # in case the training stalls or crashes, loop to resume (-y 1)
 while true; do

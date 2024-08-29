@@ -7,7 +7,7 @@
 
 make train_gpt2cu USE_CUDNN=1
 out_dir="log_gpt2_124M_rook_5m_6e"
-done_file="$out_dir/DONE_000069864"
+done_file="$out_dir/DONE_00069864"
 
 # in case the training stalls or crashes, loop to resume (-y 1)
 while true; do
@@ -24,7 +24,7 @@ while true; do
                 -j "dev/data/rook/rook_val_*.bin" \
                 -o $out_dir \
                 -v 100 -s 5000 -g 144 \
-                -n 5000 \
+                -n 10000 \
                 -h 0 \
                 -b 32 -t 1024 \
                 -d 65536 \
