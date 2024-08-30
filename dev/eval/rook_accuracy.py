@@ -11,10 +11,14 @@ parser.add_argument("-d", "--data_path", type=str, help="Path to validation data
 parser.add_argument("-g", "--greedy", action="store_true", help="Use greedy decoding")
 parser.add_argument("-t", "--temp", type=float, default=0.6, help="Sampling temperature")
 parser.add_argument("-k", "--topk", type=int, default=5, help="Sampling top-k")
+parser.add_argument("-b", "--batch_size", type=int, default=1, help="Batch size")
 args = parser.parse_args()
 
-p = pipeline("text-generation", model=args.model_path, device="cuda", torch_dtype=torch.bfloat16)
+p = pipeline("text-generation", model=args.model_path, device_map="auto", torch_dtype=torch.bfloat16, batch_size=args.batch_size)
+p.tokenizer.pad_token_id = p.model.config.eos_token_id
+p.tokenizer.padding_side = "left"
 
+# TODO convert to HF dataset
 with open(args.data_path, "r") as f:
     ds = [l for l in f.readlines() if l.strip()]
 

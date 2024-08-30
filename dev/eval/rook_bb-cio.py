@@ -25,25 +25,28 @@ if args.batch_size > 1:
     p.tokenizer.pad_token_id = p.model.config.eos_token_id
     
     print("WARNING: generating with batch_size > 1 leads to slightly worse results")
-    # TODO
     # with batch_size > 1, the model will generate different completions for the same prompt, vs batch_size=1
     # even when setting torch.manual_seed()
     # this generally reduces the accurady in this benchmark, need to investigate further
     # https://huggingface.co/docs/transformers/generation_strategies#greedy-search
     # could this be related to padding in batches?
     # for now, use batch_size=1
+    # TODO check if left padding solves this
 else:
     p = pipeline("text-generation", model=args.model_path, device="cuda", torch_dtype=torch.bfloat16)
 
 # generate completion after FEN
 def generate_completion(fens):
     prompt = ["P: "+fen for fen in fens]
+    gen_args = {
+        "max_length": 200,
+        "truncation": True,
+        "pad_token_id": p.tokenizer.eos_token_id,
+        }
     if args.greedy:
-        res = p(prompt, max_length=200, truncation=True, num_beams=1, do_sample=False,
-                pad_token_id=p.tokenizer.eos_token_id)
+        res = p(prompt, do_sample=False, **gen_args)
     else:
-        res = p(prompt, max_length=200, truncation=True, do_sample=True, 
-                temperature=args.temp, top_k=args.topk, pad_token_id=p.tokenizer.eos_token_id)
+        res = p(prompt, do_sample=True, temperature=args.temp, top_k=args.topk, **gen_args)
     gen = [r[0]["generated_text"] for r in res]
     return gen
 

@@ -11,6 +11,7 @@ parser.add_argument("-n", "--num_games", type=int, default=50, help="number of s
 parser.add_argument("-g", "--greedy", action="store_true", help="Use greedy decoding")
 parser.add_argument("-t", "--temp", type=float, default=0.6, help="Sampling temperature")
 parser.add_argument("-k", "--topk", type=int, default=5, help="Sampling top-k")
+parser.add_argument("-b", "--batch_size", type=int, default=1, help="Batch size")
 args = parser.parse_args()
 
 print("ROOK model self-play evaluation for illegal moves and completed games")
@@ -18,7 +19,10 @@ print("ROOK model self-play evaluation for illegal moves and completed games")
 if args.greedy:
     print("Greedy decoding - this will result in the same moves played for every game")
 
-p = pipeline("text-generation", model=args.model_path, device="cuda", torch_dtype=torch.bfloat16)
+p = pipeline("text-generation", model=args.model_path, device_map="auto", torch_dtype=torch.bfloat16, batch_size=args.batch_size)
+p.tokenizer.pad_token_id = p.model.config.eos_token_id
+p.tokenizer.padding_side = "left"
+
 counters = []
 for _ in tqdm(range(args.num_games)):
     counter = 0

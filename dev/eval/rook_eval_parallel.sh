@@ -31,7 +31,7 @@ echo "Running 4 evals in parallel. This can take 20-30 minutes."
 echo ""
 
 # Check Multi-GPU available
-gpu_count=$(nvidia-smi -L | wc -1)
+gpu_count=$(nvidia-smi -L | wc -l)
 if [ $gpu_count -gt 1 ]; then
     cuda_device=1
 else
