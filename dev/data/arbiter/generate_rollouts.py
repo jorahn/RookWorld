@@ -30,7 +30,10 @@ args.add_argument("-t", "--temperature", type=float, default=0.7, help="Sampling
 args.add_argument("-k", "--top_k", type=int, default=15, help="Top-K sampling")
 args.add_argument("-g", "--greedy", action="store_true", default=False, help="Use greedy sampling (not recommended, lacks diversity)")
 args.add_argument("-l", "--logfile", type=str, default="chess_env_rollouts.jsonl", help="Save rollouts to this file")
+args.add_argument("-as", "--arbitersim", action="store_true", help="Use ArbiterSim instead of ChessEnvironment")
 args = args.parse_args()
+
+STARTING_POSITION = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
 
 class Policy:
     # to learn various states, including illegal actions, it's helpful to have an imperfect policy
@@ -67,13 +70,63 @@ class Policy:
             moves.append(move)
         return moves
 
+class ArbiterSimEnvironment:
+    # Use ArbiterSim model to simulate chess game environment
+
+    def __init__(self, model):
+        self.current_position = STARTING_POSITION
+        self.previous_moves = deque(maxlen=10)
+        self.m = pipeline("text-generation", model=model, device_map="auto", 
+                          torch_dtype=torch.bfloat16, batch_size=1)
+    
+    def step(self, action):
+        state = self.current_position
+        
+        # TODO maybe move to end of step in sync with ChessEnvironment
+        self.previous_moves.append(action)
+        moves = " ".join(self.previous_moves)
+        prompt = f"{state}+{action}+{moves}+"
+        gen = self.m(prompt, max_length=256, truncation=True, pad_token_id=self.m.tokenizer.eos_token_id, return_full_text=False)
+        txt = gen[0]['generated_text']
+        print(txt)
+        try:
+            new_state, reward, terminated, truncated = txt.split("+")
+            reward = float(reward)
+            terminated = int(terminated)
+            truncated = int(truncated)
+        except ValueError:
+            new_state = None
+            reward = 0.0
+            terminated = True
+            truncated = True
+
+        info = {
+            "previous_state": state,
+            "action": action,
+            "new_state": new_state,
+            "reward": reward,
+            "terminated": terminated,
+            "truncated": truncated,
+            "recent_moves": list(self.recent_moves),
+        }
+        self.current_position = new_state
+        return new_state, reward, terminated, truncated, info
+
+    def reset(self, fen=None, recent_moves=[]):
+        if fen is not None:
+            self.current_position = fen
+            self.recent_moves = deque(recent_moves, maxlen=10)
+        else:
+            self.current_position = STARTING_POSITION
+            self.recent_moves = deque(maxlen=10)
+        return self.current_position, None
+    
 class ChessEnvironment:
     # try to mirror the API of OpenAI Gym
     # TODO maybe subclass it
 
-    def __init__(self, legal_move_reward=0.001, log_file=None):
+    def __init__(self, legal_move_reward=0.001):
         self.board = chess.Board()
-        self.log_file = log_file
         self.illegal_move = False
         self.recent_moves = deque(maxlen=10) # to detect 5-fold repetition
         # maybe make more efficient, last move is already known and 9 half-moves are enough
@@ -89,6 +142,7 @@ class ChessEnvironment:
     def step(self, action):
         previous_state = self.get_state()
 
+        # TODO move to end of step, current action is already known
         self.recent_moves.append(action)
         try:
             move = chess.Move.from_uci(action)
@@ -125,8 +179,7 @@ class ChessEnvironment:
         }
         return observation, reward, terminated, truncated, info
 
-    def reset(self, seed=None, fen=None):
-        # seed just for Gym compatibility, could be used for Chess960
+    def reset(self, fen=None):
         self.board = chess.Board()
         if fen is not None:
             self.board.set_fen(fen)
@@ -136,10 +189,10 @@ class ChessEnvironment:
         return self.get_state(), info
     
 
-def play(n_episodes, model, batch_size=2, sampling={}):
+def play(n_episodes, model, envs, batch_size=2, sampling={}):
     # TODO maybe add max_half_moves limit
 
-    envs = [ChessEnvironment() for _ in range(batch_size)]
+    
 
     # TODO potentially implement two alternating agents, to allow for self-play of different models
     agent = Policy(model=model, batch_size=batch_size, sampling=sampling)
@@ -194,13 +247,20 @@ if __name__ == "__main__":
             "temperature": args.temperature,
             "top_k": args.top_k,
         }
+    
+    if args.arbitersim:
+        arbiter_model = "jrahn/arbitersim_2m_3e_gpt2_124M_hf"
+        envs = [ArbiterSimEnvironment(model=arbiter_model) for _ in range(args.batch_size)]
+    else:
+        envs = [ChessEnvironment() for _ in range(args.batch_size)]
 
-    print("Playing games...")
+    print(f"Playing games (Environment: {str(envs[0])})...")
     stats = play(
         n_episodes=args.episodes, 
         model=args.model, 
+        envs=envs,
         batch_size=args.batch_size,
-        sampling=sampling
+        sampling=sampling,
     )
 
     print("Done!")
