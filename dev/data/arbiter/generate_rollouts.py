@@ -29,6 +29,7 @@ class Policy:
         self.m = pipeline("text-generation", model=model, device_map=device_map, 
                           torch_dtype=torch.bfloat16, batch_size=batch_size)
         self.m.tokenizer.pad_token_id = self.m.model.config.eos_token_id
+        self.m.tokenizer.padding_side = "left"
         sampling_defaults = {
             "do_sample": True,
             "temperature": 0.7,
