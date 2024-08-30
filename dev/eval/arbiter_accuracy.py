@@ -91,6 +91,7 @@ stats = {
     "invalid_completion": sum(r["invalid"] for r in results),
     "next_state_correct": sum(r["next_state_correct"] for r in results),
     "next_state_fuzzratio": [r["next_state_fuzzratio"] for r in results if r["next_state_fuzzratio"] > 0],
+    "next_state_incorrect_fuzzratio": [r["next_state_fuzzratio"] for r in results if r["next_state_fuzzratio"] < 100],
     "reward_correct": sum(r["reward_correct"] for r in results),
     "reward_mae": [r["reward_mae"] for r in results if r["reward_mae"] is not None],
     "terminated_correct": sum(r["terminated_correct"] for r in results),
@@ -101,7 +102,8 @@ print("Evaluation results:")
 print(f"Total samples: {stats['total']:,}")
 print(f"Invalid completions: {stats['invalid_completion']/stats['total']:.2%}")
 print(f"Next state correct: {stats['next_state_correct']/stats['total']:.2%}")
-print(f"Next state fuzzratio: {sum(stats['next_state_fuzzratio'])/len(stats['next_state_fuzzratio'])/100:.2%}")
+print(f"Next state fuzz-ratio: {sum(stats['next_state_fuzzratio'])/len(stats['next_state_fuzzratio'])/100:.2%}")
+print(f"Next state incorrect fuzz-ratio: {sum(stats['next_state_incorrect_fuzzratio'])/len(stats['next_state_incorrect_fuzzratio'])/100:.2%}")
 print(f"Reward correct: {stats['reward_correct']/stats['total']:.2%}")
 print(f"Reward MAE: {sum(stats['reward_mae'])/len(stats['reward_mae']):.4f}")
 print(f"Terminated correct: {stats['terminated_correct']/stats['total']:.2%}")
