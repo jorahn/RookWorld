@@ -1,5 +1,15 @@
 # This script generates rollouts of chess games using python-chess as the environment and a ROOK model as policy.
 
+# improvements:
+# - generate more truncated and terminated episodes
+# - generate sufficient examples for rate states like
+#   - checkmate
+#   - stalemate
+#   - insufficient material
+#   - 50/75-move rule
+#   - 3/5-fold repetition
+#   - piece promotion, en-passant, pinned pieces, king in check
+
 from argparse import ArgumentParser
 from collections import deque
 import json
@@ -66,6 +76,8 @@ class ChessEnvironment:
         self.log_file = log_file
         self.illegal_move = False
         self.recent_moves = deque(maxlen=10) # to detect 5-fold repetition
+        # maybe make more efficient, last move is already known and 9 half-moves are enough
+
         self.legal_move_reward = legal_move_reward
     
     def get_state(self):
