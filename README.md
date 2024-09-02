@@ -1,4 +1,4 @@
-<div align="center"><img src="evol.jpeg" width="150" height="74"></div>
+<div align="center"><img src="evol.jpeg" width="150" height="106"></div>
 
 This repo contains code for:
 - [**ROOK**](#rook-reasoning-over-organized-knowledge): A chess-playing language model trained on a synthetic dataset with chain-of-thought evaluation from Stockfish.
