@@ -60,7 +60,7 @@ temp_log4=$(mktemp)
 
 # Run the four Python commands in parallel with the provided arguments
 run_command "python3 rook_accuracy.py -m $model_hf_path -d $data_path -g" "$temp_log1" "ROOK Validation Accuracy Evaluation"
-run_command "CUDA_VISIBLE_DEVICES=$cuda_device python3 rook_bb-cio.py -m $model_hf_path -g" "$temp_log2" "ROOK BIG-bench Checkmate In One Evaluation"
+run_command "python3 rook_bb-cio.py -m $model_hf_path -g" "$temp_log2" "ROOK BIG-bench Checkmate In One Evaluation"
 run_command "python3 rook_selfplay.py -m $model_hf_path" "$temp_log3" "ROOK Self-play Evaluation"
 run_command "python3 rook_vs_stockfish.py -m $model_hf_path -g -p $stockfish_path" "$temp_log4" "ROOK vs Stockfish Evaluation"
 

@@ -24,14 +24,18 @@ logging.get_logger("transformers").setLevel(logging.ERROR)
 
 args = ArgumentParser()
 args.add_argument("-e", "--episodes", type=int, default=100, help="Number of episodes to play")
-args.add_argument("-m", "--model", type=str, default="jrahn/rook_5m_3e_gpt2_124M_hf", help="Model name or path")
+args.add_argument("-pm", "--policy_model", type=str, default="jrahn/rook_5m_3e_gpt2_124M_hf", help="Model name or path")
+args.add_argument("-em", "--env_model", type=str, default="", help="Use ArbiterSim or RookWorld instead of ChessEnvironment")
 args.add_argument("-bs", "--batch_size", type=int, default=64, help="Batch size of concurrent games (64 ~ 6GB VRAM)")
 args.add_argument("-t", "--temperature", type=float, default=0.7, help="Sampling temperature")
 args.add_argument("-k", "--top_k", type=int, default=15, help="Top-K sampling")
 args.add_argument("-g", "--greedy", action="store_true", default=False, help="Use greedy sampling (not recommended, lacks diversity)")
 args.add_argument("-l", "--logfile", type=str, default="chess_env_rollouts.jsonl", help="Save rollouts to this file")
-args.add_argument("-as", "--arbitersim", action="store_true", help="Use ArbiterSim instead of ChessEnvironment")
+args.add_argument("-le", "--log_evol", action="store_true", default=False, help="Log Policy & Environment, select only moves from winning side for RookWorld Evol")
 args = args.parse_args()
+
+if args.log_evol:
+    raise NotImplementedError("log_evol is not implemented yet")
 
 STARTING_POSITION = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
 
@@ -72,33 +76,51 @@ class Policy:
 
 class ArbiterSimEnvironment:
     # Use ArbiterSim model to simulate chess game environment
+    # TODO allow batched inference like Policy
 
     def __init__(self, model):
         self.current_position = STARTING_POSITION
         self.previous_moves = deque(maxlen=10)
         self.m = pipeline("text-generation", model=model, device_map="auto", 
                           torch_dtype=torch.bfloat16, batch_size=1)
+        self.m.tokenizer.pad_token_id = self.m.model.config.eos_token_id
+        self.m.tokenizer.padding_side = "left"
     
     def step(self, action):
         state = self.current_position
         
         # TODO maybe move to end of step in sync with ChessEnvironment
-        self.previous_moves.append(action)
-        moves = " ".join(self.previous_moves)
-        prompt = f"{state}+{action}+{moves}+"
-        gen = self.m(prompt, max_length=256, truncation=True, pad_token_id=self.m.tokenizer.eos_token_id, return_full_text=False)
-        txt = gen[0]['generated_text']
-        print(txt)
-        try:
-            new_state, reward, terminated, truncated = txt.split("+")
-            reward = float(reward)
-            terminated = int(terminated)
-            truncated = int(truncated)
-        except ValueError:
+        if not action:
+            current_player = state.split(" ")[1]
+            assert current_player in ["w", "b"], f"Invalid state FEN generated: {state}"
             new_state = None
-            reward = 0.0
-            terminated = True
+            reward = -1.0 if current_player == "w" else 1.0
+            terminated = False
             truncated = True
+        else:
+            self.previous_moves.append(action)
+            moves = " ".join(self.previous_moves)
+            
+            if "rookworld" in args.env_model.lower():
+                prompt = f"A: {state}+{action}+{moves}+"
+            else:
+                prompt = f"{state}+{action}+{moves}+"
+
+            # TODO implement sampling vs greedy decoding like in Policy
+            gen = self.m(prompt, max_length=256, truncation=True, pad_token_id=self.m.tokenizer.eos_token_id, return_full_text=False)
+
+            txt = gen[0]['generated_text']
+            #print(txt)
+            try:
+                new_state, reward, terminated, truncated = txt.split("+")
+                reward = float(reward)
+                terminated = int(terminated)
+                truncated = int(truncated)
+            except ValueError:
+                new_state = None
+                reward = 0.0
+                terminated = True
+                truncated = True
 
         info = {
             "previous_state": state,
@@ -192,8 +214,6 @@ class ChessEnvironment:
 def play(n_episodes, model, envs, batch_size=2, sampling={}):
     # TODO maybe add max_half_moves limit
 
-    
-
     # TODO potentially implement two alternating agents, to allow for self-play of different models
     agent = Policy(model=model, batch_size=batch_size, sampling=sampling)
     
@@ -220,6 +240,7 @@ def play(n_episodes, model, envs, batch_size=2, sampling={}):
                 # not required for Env but for RL in Env
 
                 if info is not None:
+                    # TODO log only winning games for RookWorld Evol
                     log.write(json.dumps(info) + "\n")
                 
                 if termination or truncation: # maybe also check for max_half_moves
@@ -248,16 +269,15 @@ if __name__ == "__main__":
             "top_k": args.top_k,
         }
     
-    if args.arbitersim:
-        arbiter_model = "jrahn/arbitersim_2m_3e_gpt2_124M_hf"
-        envs = [ArbiterSimEnvironment(model=arbiter_model) for _ in range(args.batch_size)]
+    if args.env_model:
+        envs = [ArbiterSimEnvironment(model=args.env_model) for _ in range(args.batch_size)]
     else:
         envs = [ChessEnvironment() for _ in range(args.batch_size)]
 
     print(f"Playing games (Environment: {str(envs[0])})...")
     stats = play(
         n_episodes=args.episodes, 
-        model=args.model, 
+        model=args.policy_model, 
         envs=envs,
         batch_size=args.batch_size,
         sampling=sampling,

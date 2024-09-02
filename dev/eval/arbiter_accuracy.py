@@ -23,7 +23,7 @@ pipe.tokenizer.padding_side = "left"
 
 def prepare(e):
     previous_state, action, recent_moves, new_state, reward, terminated, truncated = e["text"].split("+")
-    if args.model_path.lower().contains("rookworld"):
+    if "rookworld" in args.model_path.lower():
         # add prompt prefix for RookWorld model
         e["prompt"] = f"A: {previous_state}+{action}+{recent_moves}+"
     else:
