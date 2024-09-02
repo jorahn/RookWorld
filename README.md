@@ -87,7 +87,7 @@ A language model trained to simulate a chess environment from rollouts of ROOK s
 |---------------|---------------------|---------------------|--------------------------------|-----------------|------------|---------------------|--------------------|
 | [2M](https://huggingface.co/datasets/jrahn/arbiter_2m) | 0% | 92.3% | 99.76% | 98.93% | 0.0098 | 99.04% | 99.89% |
 
-*ROOK can take > 50 consecutive legal actions (half-moves) in ArbiterSim (validity of actions and states supervised by python-chess)
+***ROOK 5M x 3E** can take > 50 consecutive legal actions (half-moves) in **ArbiterSim 2M** (validity of actions and states supervised by python-chess)
 
 training:
 <div align="center"><img src="train_arbiter2m3e.png" width="597" height="283"></div>
