@@ -1,11 +1,3 @@
-"""
-Arbiter dataset
-
-example doc to highlight the structure of the dataset (newline delimited text file):
-
-5R2/6R1/8/3P4/p7/1b2R2P/2p3P1/6K1 b - - 0 58+b3d5+e1e3 a2b3 f7f2 b5b4 g5g7 b4c3 f2f8 c3c2 d4d5 b3d5+5R2/6R1/8/3b4/p7/4R2P/2p3P1/6K1 w - - 0 59+0.001+0+0
-"""
-
 import os, argparse, random
 import multiprocessing as mp
 from glob import glob
@@ -13,28 +5,28 @@ from glob import glob
 import numpy as np
 import tiktoken
 from tqdm import tqdm
-from datasets import load_dataset
+from datasets import load_dataset, interleave_datasets
 
 from data_common import write_datafile
 # ------------------------------------------
 
-parser = argparse.ArgumentParser(description="ARBITER dataset preprocessing")
-parser.add_argument("-i", "--input", type=str, default="jrahn/arbiter_2m", help="ARBITER dataset version txt-files")
+
+parser = argparse.ArgumentParser(description="RookWorld dataset preprocessing")
+parser.add_argument("-dsr", "--dataset_rook", type=str, default="lfsm/rook-5m", help="ROOK dataset")
+parser.add_argument("-dsa", "--dataset_arbiter", type=str, default="jrahn/arbiter_2m", help="ARBITER dataset")
+parser.add_argument("-o", "--output", type=str, default="jrahn/rookworld_7m", help="RookWorld HF dataset")
+parser.add_argument("-p", "--push_to_hub", action="store_true", help="Push to Hugging Face Hub")
 parser.add_argument("-s", "--seed", type=int, default=42, help="Random seed")
 args = parser.parse_args()
 
 
 random.seed(args.seed)
 shard_size = 2**24 
-# for now only small datasets
-# originally reduced to create a suitable small validation set, maybe increase back to 2**20
-name = "arbiter"
-local_dir = "arbiter"
+
+name = "rookworld"
+local_dir = args.output.split("/")[-1]
 DATA_CACHE_DIR = os.path.join(os.path.dirname(__file__), local_dir)
 os.makedirs(DATA_CACHE_DIR, exist_ok=True)
-
-ds = load_dataset(args.input)
-print(f"{len(ds['train']):,} train samples, {len(ds['test']):,} test samples")
 
 
 # init the tokenizer
@@ -88,5 +80,21 @@ def process_dataset(ds, split):
             filename = os.path.join(DATA_CACHE_DIR, f"{name}_{split}_{shard_index:06d}.bin")
             write_datafile(filename, all_tokens_np[:token_count])
 
+
+ds1 = load_dataset(args.dataset_rook, split="train")
+ds2 = load_dataset(args.dataset_arbiter, split="train")
+len1 = len(ds1)
+len2 = len(ds2)
+total_len = len1 + len2
+
+ds = interleave_datasets([ds1, ds2], probabilities=[len1/total_len, len2/total_len])
+ds = ds.train_test_split(test_size=15_000, seed=args.seed)
+print(ds)
+
+if args.push_to_hub:
+    ds.push_to_hub(args.output)
+print(f"{len(ds['train']):,} train samples, {len(ds['test']):,} test samples")
+
 process_dataset(ds["train"], "train")
 process_dataset(ds["test"], "val")
+
