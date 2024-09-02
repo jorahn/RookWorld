@@ -81,20 +81,34 @@ def process_dataset(ds, split):
             write_datafile(filename, all_tokens_np[:token_count])
 
 
+def add_arbiter_prefix(ex):
+    ex["text"] = f"A: {ex['text']}"
+    return ex
+
+print("Loading datasets")
 ds1 = load_dataset(args.dataset_rook, split="train")
 ds2 = load_dataset(args.dataset_arbiter, split="train")
+
+print("Adding arbiter prefix")
+ds2 = ds2.map(add_arbiter_prefix)
+
 len1 = len(ds1)
 len2 = len(ds2)
 total_len = len1 + len2
 
+print(f"Interleaving datasets (ROOK: {len1:,} samples, ARBITER: {len2:,} samples)")
 ds = interleave_datasets([ds1, ds2], probabilities=[len1/total_len, len2/total_len])
+
+print("Shuffling + splitting dataset")
 ds = ds.train_test_split(test_size=15_000, seed=args.seed)
 print(ds)
 
 if args.push_to_hub:
+    print("Pushing to Hugging Face Hub")
     ds.push_to_hub(args.output)
-print(f"{len(ds['train']):,} train samples, {len(ds['test']):,} test samples")
 
+print("Processing datasets for llm.c training")
+print(f"{len(ds['train']):,} train samples, {len(ds['test']):,} test samples")
 process_dataset(ds["train"], "train")
 process_dataset(ds["test"], "val")
 
