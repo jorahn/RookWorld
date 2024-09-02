@@ -1,9 +1,9 @@
-<div align="center"><img src="logo.png" width="150" height="150"></div>
+<div align="center"><img src="evol.jpeg" width="150" height="74"></div>
 
 This repo contains code for:
-- **ROOK**: A chess-playing language model trained on a synthetic dataset with chain-of-thought evaluation from Stockfish.
-- **ArbiterSim**: A language model trained to simulate a chess environment from rollouts of ROOK self-play.
-- **RookWorld**: A single language model trained to generate both the ROOK policy and the ArbiterSim Environment through different prompt prefixes.
+- [**ROOK**](#rook-reasoning-over-organized-knowledge): A chess-playing language model trained on a synthetic dataset with chain-of-thought evaluation from Stockfish.
+- [**ArbiterSim**](#arbitersim): A language model trained to simulate a chess environment from rollouts of ROOK self-play.
+- [**RookWorld**](#rookworld--rookworld-evol): A single language model trained to generate both the ROOK policy and the ArbiterSim Environment through different prompt prefixes.
 - **RookWorld Evol**: Filter winning rollouts from self-play of the RookWorld Policy in the RookWorld Environment and continue training to achieve stepwise Policy self-improvement.
 
 Thanks to the developers of these awesome dependencies: 
@@ -13,6 +13,8 @@ Thanks to the developers of these awesome dependencies:
 - [huggingface/datasets](https://github.com/huggingface/datasets) 🤗 The largest hub of ready-to-use datasets for ML models
 
 ---
+
+<div align="center"><img src="logo.png" width="150" height="150"></div>
 
 # ROOK: Reasoning Over Organized Knowledge
 A chess-playing language model trained on a synthetic dataset with chain-of-thought evaluation from Stockfish.
@@ -76,6 +78,7 @@ training:
 - run `llm.c/dev/eval/rook_analysis.py` to provide an FEN (e.g. from a human game) and get the model evaluation for it
 
 ---
+
 <div align="center"><img src="arbitersim.jpeg" width="150" height="113"></div>
 
 # ArbiterSim
