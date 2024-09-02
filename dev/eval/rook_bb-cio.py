@@ -1,12 +1,13 @@
 # Run Google BigBench Checkmate in One Benchmark
 
-import argparse, json, io
+import argparse, json, io, os
 
 from transformers import pipeline
 import torch
 import chess
 import chess.pgn
 from tqdm import tqdm
+import requests
 
 torch.manual_seed(42)
 
@@ -18,6 +19,21 @@ parser.add_argument("-t", "--temp", type=float, default=0.6, help="Sampling temp
 parser.add_argument("-k", "--topk", type=int, default=5, help="Sampling top-k")
 parser.add_argument("-n", "--num_samples", type=int, help="Max number of samples to evaluate")
 args = parser.parse_args()
+
+
+URL = "https://github.com/google/BIG-bench/raw/main/bigbench/benchmark_tasks/checkmate_in_one/task.json"
+
+def download():
+    """Downloads BIG-bench Checkmate in One"""
+    DATA_CACHE_DIR = "../data/bb-cio"
+    os.makedirs(DATA_CACHE_DIR, exist_ok=True)
+    data_filename = os.path.join(DATA_CACHE_DIR, f"task.json")
+    if not os.path.exists(data_filename):
+        print(f"Downloading {URL} to {data_filename}...")
+        with open(data_filename, "wb") as f:
+            f.write(requests.get(URL).content)
+    else:
+        print(f"{data_filename} already exists, skipping download...")
 
 if args.batch_size > 1:
     p = pipeline("text-generation", model=args.model_path, device_map="auto", torch_dtype=torch.bfloat16, batch_size=args.batch_size)
