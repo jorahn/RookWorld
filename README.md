@@ -14,10 +14,9 @@ Thanks to the developers of these awesome dependencies:
 
 ---
 
-<div align="center"><img src="logo.png" width="150" height="150"></div>
-
 # ROOK: Reasoning Over Organized Knowledge
 A chess-playing language model trained on a synthetic dataset with chain-of-thought evaluation from Stockfish.
+<div align="center"><img src="logo.png" width="150" height="150"></div>
 
 ## basic ROOK setup
 - tested: linux (ubuntu 22.04), python 3.11, nvidia-gpu, cuda 12.4, cudnn 9.3, stockfish 16.1
@@ -79,10 +78,9 @@ training:
 
 ---
 
-<div align="center"><img src="arbitersim.jpeg" width="150" height="113"></div>
-
 # ArbiterSim
 A language model trained to simulate a chess environment from rollouts of ROOK self-play.
+<div align="center"><img src="arbitersim.jpeg" width="150" height="113"></div>
 
 ## benchmarks
 | Train Samples | Invalid Completions | Next State Accuracy | Next State norm. lev. Distance | Reward Accuracy | Reward MAE | Terminated Accuracy | Truncated Accuracy |
