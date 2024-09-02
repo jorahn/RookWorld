@@ -2,9 +2,14 @@
 
 # ROOK: Reasoning Over Organized Knowledge
 
-A chess-playing transformer model trained on a synthetic dataset with chain-of-thought evaluation from Stockfish.
+This repo contains code for:
+- ROOK: A chess-playing language model trained on a synthetic dataset with chain-of-thought evaluation from Stockfish.
+- ArbiterSim: A language model trained to simulate a chess environment from rollouts of ROOK self-play.
+- RookWorld: A single language model trained to generate both the ROOK policy and the ArbiterSim Environment through different prompt prefixes.
+- RookWorld Evol: Filter winning rollouts from self-play of the RookWorld Policy in the RookWorld Environment and continue training to achieve stepwise Policy self-improvement.
 
-## setup
+
+## basic ROOK setup
 - tested: linux (ubuntu 22.04), python 3.11, nvidia-gpu, cuda 12.4, cudnn 9.3, stockfish 16.1
 - download and unpack stockfish binary from [here](https://github.com/official-stockfish/Stockfish)
 - set env STOCKFISH_PATH to binary with `export $STOCKFISH_PATH=/path/to/stockfish-binary`
