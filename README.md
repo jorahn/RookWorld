@@ -117,14 +117,14 @@ A single language model trained to generate both the ROOK policy and the Arbiter
 **RookWorld 7M** beats ROOK 5M on BIG-bench Checkmate in One and Best Move Accuracy:
 | FEN Samples  | Steps (Epochs) | Val-Loss | [BIG-bench Mate in One](https://github.com/google/BIG-bench/tree/main/bigbench/benchmark_tasks/checkmate_in_one) Accuracy | Best Move Val Accuracy | Top 5 Move Val Accuracy | Selfplay Legal Half-Moves (Illegal %) |
 |--------------|----------------|----------|-------------------------------|--------------------|---------------------|---------------------------------------|
-| [5M](https://huggingface.co/datasets/lfsm/rook-5m)|34,932 (3) |**0.5629**|   11.5%   |  13.4%   | **39.6%**         | **41.4 (2.4%)**                       |
-| RookWorld 7M (5M Rook task) | 47,203 (3)                      | -        | **13.2%** |**16.6%** |   39.2%           |   36.3 (2.7%)                         |
+| ROOK [5M](https://huggingface.co/datasets/lfsm/rook-5m)|34,932 (3) | -   |   11.5%   |  13.4%   | **39.6%**         | **41.4 (2.4%)**                  |
+| RookWorld 7M (5M Rook task + 2M Arbiter task)          | 47,203 (3)| -   | **13.2%** |**16.6%** |   39.2%           |   36.3 (2.7%)                    |
 
 **RookWorld 7M** beats ArbiterSim 2M in all benchmarks:
 | Train Samples | Invalid Completions | Next State Accuracy | Next State [NLS](https://en.wikipedia.org/wiki/Levenshtein_distance) | Reward Accuracy | Reward MAE | Terminated Accuracy | Truncated Accuracy |
 |---------------|---------------------|---------------------|----------------------------------------------------------------------|-----------------|------------|---------------------|--------------------|
 | Arbiter [2M](https://huggingface.co/datasets/jrahn/arbiter_2m) | 0% | 92.3% | 99.76% | 98.93% | 0.0098 | 99.04% | 99.89% |
-| RookWorld 7M (2M Arbiter task) | 0% | **99.61%** | **99.99%** | **99.11%** | **0.0084** | **99.13%** | **99.98%** |
+| RookWorld 7M (5M Rook task + 2M Arbiter task) | 0% | **99.61%** | **99.99%** | **99.11%** | **0.0084** | **99.13%** | **99.98%** |
 
 training:
 <div align="center"><img src="train_rookworld7m3e.png" width="610" height="282"></div>
