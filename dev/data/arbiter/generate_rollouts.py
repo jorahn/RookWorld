@@ -1,6 +1,6 @@
 # This script generates rollouts of chess games using python-chess as the environment and a ROOK model as policy.
 
-# improvements:
+# TODO improvements:
 # - generate more truncated and terminated episodes
 # - generate sufficient examples for rate states like
 #   - checkmate
@@ -32,6 +32,7 @@ args.add_argument("-k", "--top_k", type=int, default=15, help="Top-K sampling")
 args.add_argument("-g", "--greedy", action="store_true", default=False, help="Use greedy sampling (not recommended, lacks diversity)")
 args.add_argument("-l", "--logfile", type=str, default="chess_env_rollouts.jsonl", help="Save rollouts to this file")
 args.add_argument("-le", "--log_evol", action="store_true", default=False, help="Log Policy & Environment, select only moves from winning side for RookWorld Evol")
+args.add_argument("-d", "--debug", action="store_true", help="Print every generation")
 args = args.parse_args()
 
 if args.log_evol:
@@ -86,24 +87,26 @@ class RookWorldEnvironment:
 
     def step(self, actions):
         states = self.current_position
-        results = [[]] * self.batch_size
-
+        results = []
+        
         # TODO maybe move to end of step in sync with ChessEnvironment
         for i, action in enumerate(actions):
+            if args.debug: print(i, action)
             if action is not None:
                 self.previous_moves[i].append(action)
             else:
                 self.previous_moves[i].append("None")
         moves = [" ".join(pm) for pm in self.previous_moves]
-
+        print(moves)
+        
         sam = zip(states, actions, moves)
         prompts = [f"A: {s}+{a}+{m}+" for s, a, m in sam]
 
         # TODO implement sampling vs greedy decoding like in Policy
-        gens = self.m(prompts, max_length=256, truncation=True, pad_token_id=self.m.tokenizer.eos_token_id, return_full_text=False)
+        gens = self.m(prompts, max_length=256, truncation=True, 
+                pad_token_id=self.m.tokenizer.eos_token_id, return_full_text=False)
 
         txts = [gen[0]['generated_text'] for gen in gens]
-        #print(txt)
         for i, txt in enumerate(txts):
             try:
                 assert actions[i] is not None
@@ -126,16 +129,15 @@ class RookWorldEnvironment:
                 action = "None"
             info = {
                 "previous_state": self.current_position[i],
-                "action": action,
+                "action": actions[i],
                 "new_state": new_state,
                 "reward": reward,
                 "terminated": terminated,
                 "truncated": truncated,
                 "recent_moves": moves[i],
             }
-            results[i] = (new_state, reward, terminated, truncated, info)
+            results.append(new_state, reward, terminated, truncated, info)
         
-
         self.current_position = [new_state for new_state, _, _, _, _ in results]
         return results
 
@@ -190,7 +192,8 @@ class ArbiterSimEnvironment:
                 prompt = f"{state}+{action}+{moves}+"
 
             # TODO implement sampling vs greedy decoding like in Policy
-            gen = self.m(prompt, max_length=256, truncation=True, pad_token_id=self.m.tokenizer.eos_token_id, return_full_text=False)
+            gen = self.m(prompt, max_length=256, truncation=True, 
+                    pad_token_id=self.m.tokenizer.eos_token_id, return_full_text=False)
 
             txt = gen[0]['generated_text']
             #print(txt)
@@ -315,10 +318,23 @@ def play(n_episodes, model, envs, batch_size=2, sampling={}):
         # loop over episodes
         while not done:
             actions = agent.sample_actions(states)
+            
+            if args.debug:
+                print()
+                for i, a in enumerate(actions):
+                    print(i, ":", a)
+                input("Press Enter...")
+
             if "rookworld" in args.env_model.lower():
                 observations = envs.step(actions)
             else:
                 observations = [e.step(a) for e, a in zip(envs, actions)]
+            if args.debug:
+                print()
+                for i, o in enumerate(observations):
+                    print(i, ":", o)
+                input("Press Enter...")
+
             states = []
             for i, (state, reward, termination, truncation, info) in enumerate(observations):
                 states.append(state)
