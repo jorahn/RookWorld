@@ -6,8 +6,8 @@
 # => training time 18,865 * 300ms = 94.3 min ~= $20
 
 make train_gpt2cu USE_CUDNN=1
-out_dir="log_gpt2_124M_rook_709k"
-done_file="$out_dir/DONE_00051481"
+out_dir="log_gpt2_124M_rookworld_7m_3e"
+done_file="$out_dir/DONE_00047307"
 
 # in case the training stalls or crashes, loop to resume (-y 1)
 while true; do
@@ -18,16 +18,16 @@ while true; do
         break
     fi
 
-    # run python dev/data/rook.py to prepro data
-    ./train_gpt2cu \
-                -i "dev/data/rook/rook_train_*.bin" \
-                -j "dev/data/rook/rook_val_*.bin" \
+    # run python dev/data/rookworld.py to prepro data
+    mpirun -np 2 ./train_gpt2cu \
+                -i "dev/data/rookworld/rookworld-7m_train_*.bin" \
+                -j "dev/data/rookworld/rookworld-7m_val_*.bin" \
                 -o $out_dir \
-                -v 100 -s 10000 -g 144 \
-                -n 10000 \
+                -v 100 -s 5000 -g 144 \
+                -n 5000 \
                 -h 0 \
-                -b 2 -t 1024 \
-                -d 2048 \
+                -b 32 -t 1024 \
+                -d 65536 \
                 -r 0 \
                 -z 0 \
                 -c 0.1 \
@@ -35,7 +35,7 @@ while true; do
                 -q 0.0 \
                 -u 500 \
                 -y 1 \
-                -x 51481 \
+                -x 47307 \
                 -e "d12"
 
     sleep 1

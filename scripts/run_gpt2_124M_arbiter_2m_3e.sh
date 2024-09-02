@@ -18,7 +18,7 @@ while true; do
         break
     fi
 
-    # run python dev/data/cheessreason.py to prepro data
+    # run python dev/data/arbiter.py to prepro data
     mpirun -np 2 ./train_gpt2cu \
                 -i "dev/data/arbiter/arbiter_train_*.bin" \
                 -j "dev/data/arbiter/arbiter_val_*.bin" \

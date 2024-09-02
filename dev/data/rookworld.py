@@ -23,8 +23,8 @@ args = parser.parse_args()
 random.seed(args.seed)
 shard_size = 2**24 
 
-name = "rookworld"
-local_dir = args.output.split("/")[-1]
+name = args.output.split("/")[-1].replace("_", "-")
+local_dir = "rookworld"
 DATA_CACHE_DIR = os.path.join(os.path.dirname(__file__), local_dir)
 os.makedirs(DATA_CACHE_DIR, exist_ok=True)
 
