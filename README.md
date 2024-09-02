@@ -3,10 +3,10 @@
 # ROOK: Reasoning Over Organized Knowledge
 
 This repo contains code for:
-- ROOK: A chess-playing language model trained on a synthetic dataset with chain-of-thought evaluation from Stockfish.
-- ArbiterSim: A language model trained to simulate a chess environment from rollouts of ROOK self-play.
-- RookWorld: A single language model trained to generate both the ROOK policy and the ArbiterSim Environment through different prompt prefixes.
-- RookWorld Evol: Filter winning rollouts from self-play of the RookWorld Policy in the RookWorld Environment and continue training to achieve stepwise Policy self-improvement.
+- **ROOK**: A chess-playing language model trained on a synthetic dataset with chain-of-thought evaluation from Stockfish.
+- **ArbiterSim**: A language model trained to simulate a chess environment from rollouts of ROOK self-play.
+- **RookWorld**: A single language model trained to generate both the ROOK policy and the ArbiterSim Environment through different prompt prefixes.
+- **RookWorld Evol**: Filter winning rollouts from self-play of the RookWorld Policy in the RookWorld Environment and continue training to achieve stepwise Policy self-improvement.
 
 
 ## basic ROOK setup
