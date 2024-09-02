@@ -79,7 +79,7 @@ training:
 - run `llm.c/dev/eval/rook_analysis.py` to provide an FEN (e.g. from a human game) and get the model evaluation for it
 
 ---
-<div align="center"><img src="arbitersim.jpeg" width="113" height="150"></div>
+<div align="center"><img src="arbitersim.jpeg" width="150" height="113"></div>
 
 # ArbiterSim
 A language model trained to simulate a chess environment from rollouts of ROOK self-play.
