@@ -108,6 +108,12 @@ training:
 ---
 
 # RookWorld & RookWorld Evol
+A single language model trained to generate both the ROOK policy and the ArbiterSim Environment through different prompt prefixes.  
+**(WIP)** Filter winning rollouts from self-play of the RookWorld Policy in the RookWorld Environment and continue training to achieve stepwise Policy self-improvement.
+
+## benchmarks
+training:
+<div align="center"><img src="train_rookworld7m3e.png" width="610" height="282"></div>
 
 ## generate dataset
 1. to generate llm.c train and valid files (.bin) from interleaving existing rook- & arbiter-datasets run `llm.c/dev/data/rookworld.py`
