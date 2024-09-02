@@ -118,7 +118,7 @@ A single language model trained to generate both the ROOK policy and the Arbiter
 | Model  | Steps (Epochs) | [BIG-bench Mate in One](https://github.com/google/BIG-bench/tree/main/bigbench/benchmark_tasks/checkmate_in_one) Accuracy | Best Move Val Accuracy | Top 5 Move Val Accuracy | Selfplay Legal Half-Moves (Illegal %) |
 |--------------|----------------|-------------------------------|--------------------|---------------------|---------------------------------------|
 | ROOK [5M](https://huggingface.co/datasets/lfsm/rook-5m) x 3E |34,932 (3) |   11.5%   |  13.4%   | **39.6%**   | **41.4 (2.4%)**                  |
-| RookWorld 7M x 3E (5M Rook task + 2M Arbiter task)           |47,203 (3) | **13.2%** |**16.6%** |   39.2%     |   36.3 (2.7%)                    |
+| RookWorld 7M x 3E (5M Rook task + 2M Arbiter task)           |47,203 (3) | **13.7%** |**16.6%** |   39.2%     |   36.3 (2.7%)                    |
 
 **RookWorld 7M** beats ArbiterSim 2M in all benchmarks:
 | Model | Invalid Completions | Next State Accuracy | Next State [NLS](https://en.wikipedia.org/wiki/Levenshtein_distance) | Reward Accuracy | Reward MAE | Terminated Accuracy | Truncated Accuracy |
