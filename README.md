@@ -49,8 +49,8 @@ A chess-playing language model trained on a synthetic dataset with chain-of-thou
 | 709k         | 154,443 (3)    |  0.5953  |   7.0%                        |   8.8%             |   28.2%             |   23.5 (4.3%)                         |
 | 679k (no ME) | 32,323 (1)     |  6.3259  |   4.1%                        |   8.4%             |   -                 |    9.4 (10.7%)                        |
 | 679k (no M)  | 32,323 (1)     |  2.9636  |   4.8%                        |   7.0%             |   -                 |   10.1 (9.9%)                         |
-| [5M](https://huggingface.co/datasets/lfsm/rook-5m)|11,646 (1) |  0.5779  |   9.0%    |  12.0%  |   30.6%            |   28.8 (3.5%)                         |
-| [5M](https://huggingface.co/datasets/lfsm/rook-5m)|34,932 (3)    |**0.5629**| **11.5%** |**13.4%** | **39.6%**           | **41.4 (2.4%)**                        |
+| [5M](https://huggingface.co/datasets/lfsm/rook-5m)|11,646 (1) |  0.5779  |   9.0%    |  12.0%   |   30.6%           |   28.8 (3.5%)                         |
+| [5M](https://huggingface.co/datasets/lfsm/rook-5m)|34,932 (3) |**0.5629**| **11.5%** |  13.4%   | **39.6%**         | **41.4 (2.4%)**                       |
 
 *1 FEN sample ~150 Tokens -> ROOK 5M ~770M Tokens
 
@@ -76,6 +76,8 @@ training:
   - run `llm.c/dev/eval/rook_vs_stockfish.py` to play the converted model against Stockfish 16.1 (level 0 or higher) - currently it loses all games due to invalid moves or checkmate
 - run `llm.c/dev/eval/rook_analysis.py` to provide an FEN (e.g. from a human game) and get the model evaluation for it
 
+Note: *fast evaluation in batches is under development, leads to slight performance decline*
+
 ---
 
 # ArbiterSim
@@ -85,7 +87,8 @@ A language model trained to simulate a chess environment from rollouts of ROOK s
 ## benchmarks
 | Train Samples | Invalid Completions | Next State Accuracy | Next State [NLD](https://en.wikipedia.org/wiki/Levenshtein_distance) | Reward Accuracy | Reward MAE | Terminated Accuracy | Truncated Accuracy |
 |---------------|---------------------|---------------------|----------------------------------------------------------------------|-----------------|------------|---------------------|--------------------|
-| [2M](https://huggingface.co/datasets/jrahn/arbiter_2m) | 0% | 92.3% | 99.76% | 98.93% | 0.0098 | 99.04% | 99.89% |
+| Arbiter [2M](https://huggingface.co/datasets/jrahn/arbiter_2m) | 0% | 92.3% | 99.76% | 98.93% | 0.0098 | 99.04% | 99.89% |
+| RookWorld 7M (2M Arbiter) | 0% | 99.61% | 99.99% | 99.11% | 0.0084 | 99.13% | 99.98% |
 
 ***ROOK 5M x 3E** can take > 50 consecutive legal actions (half-moves) in **ArbiterSim 2M** (validity of actions and states supervised by python-chess)
 
@@ -112,6 +115,18 @@ A single language model trained to generate both the ROOK policy and the Arbiter
 **(WIP)** Filter winning rollouts from self-play of the RookWorld Policy in the RookWorld Environment and continue training to achieve stepwise Policy self-improvement.
 
 ## benchmarks
+**RookWorld 7M** beats ROOK 5M on BIG-bench Checkmate in One and Best Move Accuracy:
+| FEN Samples  | Steps (Epochs) | Val-Loss | [BIG-bench Mate in One](https://github.com/google/BIG-bench/tree/main/bigbench/benchmark_tasks/checkmate_in_one) Accuracy | Best Move Val Accuracy | Top 5 Move Val Accuracy | Selfplay Legal Half-Moves (Illegal %) |
+|--------------|----------------|----------|-------------------------------|--------------------|---------------------|---------------------------------------|
+| [5M](https://huggingface.co/datasets/lfsm/rook-5m)|34,932 (3) |**0.5629**|   11.5%   |  13.4%   | **39.6%**         | **41.4 (2.4%)**                       |
+| RookWorld 7M (5M Rook) | 47,203 (3)                           | -        | **13.2%** |**16.6%** |   39.2%           |   36.3 (2.7%)                         |
+
+**RookWorld 7M** beats ArbiterSim 2M in all benchmarks:
+| Train Samples | Invalid Completions | Next State Accuracy | Next State [NLD](https://en.wikipedia.org/wiki/Levenshtein_distance) | Reward Accuracy | Reward MAE | Terminated Accuracy | Truncated Accuracy |
+|---------------|---------------------|---------------------|----------------------------------------------------------------------|-----------------|------------|---------------------|--------------------|
+| Arbiter [2M](https://huggingface.co/datasets/jrahn/arbiter_2m) | 0% | 92.3% | 99.76% | 98.93% | 0.0098 | 99.04% | 99.89% |
+| RookWorld 7M (2M Arbiter) | 0% | **99.61%** | **99.99%** | **99.11%** | **0.0084** | **99.13%** | **99.98%** |
+
 training:
 <div align="center"><img src="train_rookworld7m3e.png" width="610" height="282"></div>
 
