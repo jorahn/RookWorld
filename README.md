@@ -1,13 +1,21 @@
 <div align="center"><img src="logo.png" width="150" height="150"></div>
 
-# ROOK: Reasoning Over Organized Knowledge
-
 This repo contains code for:
 - **ROOK**: A chess-playing language model trained on a synthetic dataset with chain-of-thought evaluation from Stockfish.
 - **ArbiterSim**: A language model trained to simulate a chess environment from rollouts of ROOK self-play.
 - **RookWorld**: A single language model trained to generate both the ROOK policy and the ArbiterSim Environment through different prompt prefixes.
 - **RookWorld Evol**: Filter winning rollouts from self-play of the RookWorld Policy in the RookWorld Environment and continue training to achieve stepwise Policy self-improvement.
 
+Thanks to the developers of these awesome dependencies: 
+- [karpathy/llm.c](https://github.com/karpathy/llm.c) LLMs in simple, pure C/CUDA
+- [official-stockfish/Stockfish](https://github.com/official-stockfish/Stockfish) A free and strong UCI chess engine
+- [niklasf/python-chess](https://github.com/niklasf/python-chess) a chess library for Python
+- [huggingface/datasets](https://github.com/huggingface/datasets) 🤗 The largest hub of ready-to-use datasets for ML models
+
+---
+
+# ROOK: Reasoning Over Organized Knowledge
+A chess-playing language model trained on a synthetic dataset with chain-of-thought evaluation from Stockfish.
 
 ## basic ROOK setup
 - tested: linux (ubuntu 22.04), python 3.11, nvidia-gpu, cuda 12.4, cudnn 9.3, stockfish 16.1
@@ -29,7 +37,7 @@ This repo contains code for:
   - run 50 matches against stockfish level 0
   - run self-play eval (avg ~3.5 legal half-moves in 50 self-play games with sampling: topk=5, temp=0.6)
 
-### data scaling & preliminary benchmarks
+## benchmarks & data scaling
 
 | FEN Samples  | Steps (Epochs) | Val-Loss | [BIG-bench Mate in One](https://github.com/google/BIG-bench/tree/main/bigbench/benchmark_tasks/checkmate_in_one) Accuracy | Best Move Val Accuracy | Top 5 Move Val Accuracy | Selfplay Legal Half-Moves (Illegal %) |
 |--------------|----------------|----------|-------------------------------|--------------------|---------------------|---------------------------------------|
@@ -51,12 +59,6 @@ training:
 <div align="center"><img src="train_2e3e.png" width="940" height="447"></div>
 
 
-preliminary benchmarks: 
-- 28 legal half-moves after 2.4m examples (presumably full games) with GPT2-1.5B [src](https://x.com/theshawwn/status/1212619327347871744)  
-- unpublished results 2022: BERT-style models (some pre-trained on FEN MLM) trained on next-move (text) classification:
-<div align="center"><img src="yolo.jpg" width="585" height="662"></div>
-
-
 ## generate dataset
 1. generate a text-dataset with stockfish (very cpu intense)
    1. to generate a text-dataset from human chess positions run `llm.c/dev/data/rook/generate_lichess.py -p $STOCKFISH_PATH`
@@ -68,9 +70,47 @@ preliminary benchmarks:
 - for monitoring, run `jupyter lab` in `llm.c/dev/` and open `vislog2_rook.ipynb`
 
 ## evaluation
-- run `llm.c/dev/eval/export_hf.py` to convert model.bin to huggingface gpt2 safetensor + tokenizer
-- run `llm.c/dev/eval/rook_bb-cio.py` to evaluate against BIG-bench Checkmate in One task
-- run `llm.c/dev/eval/rook_accuracy.py` to evaluate the converted model move accuracy against the validation dataset
-- run `llm.c/dev/eval/rook_selfplay.py` to play the converted model against itself, observe number of moves before illegal move
-- run `llm.c/dev/eval/rook_vs_stockfish.py` to play the converted model against Stockfish 16.1 (level 0 or higher) - currently it loses all games due to invalid moves or checkmate
+- run `llm.c/dev/eval/rook_eval_parallel.sh` to do this in one step:
+  - run `llm.c/dev/eval/export_hf.py` to convert model.bin to huggingface gpt2 safetensor + tokenizer
+  - run `llm.c/dev/eval/rook_bb-cio.py` to evaluate against BIG-bench Checkmate in One task
+  - run `llm.c/dev/eval/rook_accuracy.py` to evaluate the converted model move accuracy against the validation dataset
+  - run `llm.c/dev/eval/rook_selfplay.py` to play the converted model against itself, observe number of moves before illegal move
+  - run `llm.c/dev/eval/rook_vs_stockfish.py` to play the converted model against Stockfish 16.1 (level 0 or higher) - currently it loses all games due to invalid moves or checkmate
 - run `llm.c/dev/eval/rook_analysis.py` to provide an FEN (e.g. from a human game) and get the model evaluation for it
+
+---
+<div align="center"><img src="arbitersim.jpeg" width="113" height="150"></div>
+
+# ArbiterSim
+A language model trained to simulate a chess environment from rollouts of ROOK self-play.
+
+## benchmarks
+| Train Samples | Invalid Completions | Next State Accuracy | Next State norm. lev. Distance | Reward Accuracy | Reward MAE | Terminated Accuracy | Truncated Accuracy |
+|---------------|---------------------|---------------------|--------------------------------|-----------------|------------|---------------------|--------------------|
+| [2M](https://huggingface.co/datasets/jrahn/arbiter_2m) | 0% | 92.3% | 99.76% | 98.93% | 0.0098 | 99.04% | 99.89% |
+
+*ROOK can take > 50 consecutive legal actions (half-moves) in ArbiterSim (validity of actions and states supervised by python-chess)
+
+## generate dataset
+1. to generate and capture rollout logs from ROOK self-play run `llm.c/dev/data/arbiter/generate_rollouts.py`
+2. to generate a text-dataset from the logs run `llm.c/dev/data/arbiter/make_dataset.py`
+3. to generate llm.c train and valid files (.bin) from text-datasets run `llm.c/dev/data/arbiter.py`
+
+## run training
+- modify / run `llm.c/scripts/run_gpt2_124M_arbiter_2m_3e.sh`
+- for monitoring, run `jupyter lab` in `llm.c/dev/` and open `vislog2_rook.ipynb`
+
+## evaluation
+- run `llm.c/dev/eval/export_hf.py` to convert model.bin to huggingface gpt2 safetensor + tokenizer
+- run `llm.c/dev/eval/arbiter_accuracy.py` to run multiple evaluations against the arbiter-validation set
+
+---
+
+# RookWorld & RookWorld Evol
+
+## generate dataset
+1. to generate llm.c train and valid files (.bin) from interleaving existing rook- & arbiter-datasets run `llm.c/dev/data/rookworld.py`
+
+## run training
+- modify / run `llm.c/scripts/run_gpt2_124M_rookworld_7m_3e.sh`
+- for monitoring, run `jupyter lab` in `llm.c/dev/` and open `vislog2_rook.ipynb`
