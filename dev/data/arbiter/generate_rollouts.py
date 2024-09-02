@@ -74,6 +74,89 @@ class Policy:
             moves.append(move)
         return moves
 
+class RookWorldEnvironment:
+    def __init__(self, model, batch_size=1):
+        self.current_position = [STARTING_POSITION] * batch_size
+        self.previous_moves = [deque(maxlen=10)] * batch_size
+        self.m = pipeline("text-generation", model=model, device_map="auto", 
+                          torch_dtype=torch.bfloat16, batch_size=batch_size)
+        self.m.tokenizer.pad_token_id = self.m.model.config.eos_token_id
+        self.m.tokenizer.padding_side = "left" 
+        self.batch_size = batch_size
+
+    def step(self, actions):
+        states = self.current_position
+        results = [[]] * self.batch_size
+
+        # TODO maybe move to end of step in sync with ChessEnvironment
+        for i, action in enumerate(actions):
+            if action is not None:
+                self.previous_moves[i].append(action)
+            else:
+                self.previous_moves[i].append("None")
+        moves = [" ".join(pm) for pm in self.previous_moves]
+
+        sam = zip(states, actions, moves)
+        prompts = [f"A: {s}+{a}+{m}+" for s, a, m in sam]
+
+        # TODO implement sampling vs greedy decoding like in Policy
+        gens = self.m(prompts, max_length=256, truncation=True, pad_token_id=self.m.tokenizer.eos_token_id, return_full_text=False)
+
+        txts = [gen[0]['generated_text'] for gen in gens]
+        #print(txt)
+        for i, txt in enumerate(txts):
+            try:
+                assert actions[i] is not None
+                new_state, reward, terminated, truncated = txt.split("+")
+                reward = float(reward)
+                terminated = int(terminated)
+                truncated = int(truncated)
+            except ValueError:
+                new_state = None
+                reward = 0.0
+                terminated = True
+                truncated = True
+            except AssertionError:
+                current_player = states[i].split(" ")[1]
+                assert current_player in ["w", "b"], f"Invalid state FEN generated: {states[i]}"
+                new_state = None
+                reward = -1.0 if current_player == "w" else 1.0
+                terminated = False
+                truncated = True
+                action = "None"
+            info = {
+                "previous_state": self.current_position[i],
+                "action": action,
+                "new_state": new_state,
+                "reward": reward,
+                "terminated": terminated,
+                "truncated": truncated,
+                "recent_moves": moves[i],
+            }
+            results[i] = (new_state, reward, terminated, truncated, info)
+        
+
+        self.current_position = [new_state for new_state, _, _, _, _ in results]
+        return results
+
+    def reset(self, n=None, fen=None, recent_moves=[]):
+        if n:
+            if fen is not None:
+                self.current_position[n] = fen
+                self.recent_moves[n] = deque(recent_moves, maxlen=10)
+            else:
+                self.current_position[n] = STARTING_POSITION
+                self.recent_moves[n] = deque(maxlen=10)
+            return self.current_position[n], None
+        else:
+            if fen is not None:
+                self.current_position = [fen] * self.batch_size
+                self.recent_moves = [deque(recent_moves, maxlen=10)] * self.batch_size
+            else:
+                self.current_position = [STARTING_POSITION] * self.batch_size
+                self.recent_moves = [deque(maxlen=10)] * self.batch_size
+            return list(zip(self.current_position, [None] * self.batch_size))
+
 class ArbiterSimEnvironment:
     # Use ArbiterSim model to simulate chess game environment
     # TODO allow batched inference like Policy
@@ -221,7 +304,10 @@ def play(n_episodes, model, envs, batch_size=2, sampling={}):
     with open(args.logfile, "a") as log:
         pbar_episodes = tqdm(range(n_episodes), desc="Episodes", position=0)
 
-        state_info_tuples = [e.reset() for e in envs]
+        if "rookworld" in args.env_model.lower():
+            state_info_tuples = envs.reset()
+        else:
+            state_info_tuples = [e.reset() for e in envs]
         states = [s for s, _ in state_info_tuples]
         pbar_steps = tqdm(desc="Steps", position=1)
     
@@ -229,7 +315,10 @@ def play(n_episodes, model, envs, batch_size=2, sampling={}):
         # loop over episodes
         while not done:
             actions = agent.sample_actions(states)
-            observations = [e.step(a) for e, a in zip(envs, actions)]
+            if "rookworld" in args.env_model.lower():
+                observations = envs.step(actions)
+            else:
+                observations = [e.step(a) for e, a in zip(envs, actions)]
             states = []
             for i, (state, reward, termination, truncation, info) in enumerate(observations):
                 states.append(state)
@@ -253,7 +342,10 @@ def play(n_episodes, model, envs, batch_size=2, sampling={}):
                         # log will contain n_episodes finished
                         # + up to (batch_size - 1) started, unfinished episodes
                         # TODO maybe track num_started_episodes and ignore in logging once > n_episodes
-                    state_info_tuples[i] = envs[i].reset()
+                    if "rookworld" in args.env_model.lower():
+                        state_info_tuples[i] = envs.reset(i)
+                    else:
+                        state_info_tuples[i] = envs[i].reset()
                     states[i] = state_info_tuples[i][0]
     
     pbar_episodes.close()
@@ -270,11 +362,17 @@ if __name__ == "__main__":
         }
     
     if args.env_model:
-        envs = [ArbiterSimEnvironment(model=args.env_model) for _ in range(args.batch_size)]
+        if "rookworld" in args.env_model.lower():
+            envs = RookWorldEnvironment(model=args.env_model, batch_size=args.batch_size)
+            env_name = "RookWorldEnvironment"
+        else:
+            envs = [ArbiterSimEnvironment(model=args.env_model) for _ in range(args.batch_size)]
+            env_name = "ArbiterSimEnvironment"
     else:
         envs = [ChessEnvironment() for _ in range(args.batch_size)]
+        env_name = "ChessEnvironment"
 
-    print(f"Playing games (Environment: {str(envs[0])})...")
+    print(f"Playing games (Environment: {env_name})...")
     stats = play(
         n_episodes=args.episodes, 
         model=args.policy_model, 
