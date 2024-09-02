@@ -2,3 +2,4 @@ chess
 jupyterlab
 datasets
 thefuzz
+rapidfuzz
