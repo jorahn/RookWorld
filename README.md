@@ -83,8 +83,8 @@ A language model trained to simulate a chess environment from rollouts of ROOK s
 <div align="center"><img src="arbitersim.jpeg" width="150" height="113"></div>
 
 ## benchmarks
-| Train Samples | Invalid Completions | Next State Accuracy | Next State norm. lev. Distance | Reward Accuracy | Reward MAE | Terminated Accuracy | Truncated Accuracy |
-|---------------|---------------------|---------------------|--------------------------------|-----------------|------------|---------------------|--------------------|
+| Train Samples | Invalid Completions | Next State Accuracy | Next State [NLD](https://en.wikipedia.org/wiki/Levenshtein_distance) | Reward Accuracy | Reward MAE | Terminated Accuracy | Truncated Accuracy |
+|---------------|---------------------|---------------------|----------------------------------------------------------------------|-----------------|------------|---------------------|--------------------|
 | [2M](https://huggingface.co/datasets/jrahn/arbiter_2m) | 0% | 92.3% | 99.76% | 98.93% | 0.0098 | 99.04% | 99.89% |
 
 ***ROOK 5M x 3E** can take > 50 consecutive legal actions (half-moves) in **ArbiterSim 2M** (validity of actions and states supervised by python-chess)
