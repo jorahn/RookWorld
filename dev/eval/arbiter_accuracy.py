@@ -5,6 +5,7 @@ from datasets import load_dataset
 import torch
 import pandas as pd
 from thefuzz import fuzz
+from rapidfuzz.distance import Hamming, Levenshtein
 
 parser = argparse.ArgumentParser(description="ARBITER accuracy evaluation")
 parser.add_argument("-m", "--model_path", type=str, default="jrahn/arbitersim_2m_3e_gpt2_124M_hf", help="Path to Hugging Face model")
@@ -22,7 +23,11 @@ pipe.tokenizer.padding_side = "left"
 
 def prepare(e):
     previous_state, action, recent_moves, new_state, reward, terminated, truncated = e["text"].split("+")
-    e["prompt"] = f"{previous_state}+{action}+{recent_moves}+"
+    if args.model_path.lower().contains("rookworld"):
+        # add prompt prefix for RookWorld model
+        e["prompt"] = f"A: {previous_state}+{action}+{recent_moves}+"
+    else:
+        e["prompt"] = f"{previous_state}+{action}+{recent_moves}+"
     e["target"] = f"{new_state}+{reward}+{terminated}+{truncated}"
     return e
 
@@ -68,6 +73,8 @@ def evaluate_completion(target, prediction):
         "invalid": invalid, 
         "next_state_correct": new_state == p_new_state, 
         "next_state_fuzzratio": fuzz.ratio(new_state, p_new_state), 
+        "next_state_levenshtein": Levenshtein.normalized_similarity(new_state, p_new_state),
+        "next_state_hamming": Hamming.normalized_similarity(new_state, p_new_state), 
         "reward": reward,
         "reward_correct": reward == p_reward, 
         "reward_mae": reward_mae, 
@@ -92,6 +99,8 @@ stats = {
     "next_state_correct": sum(r["next_state_correct"] for r in results),
     "next_state_fuzzratio": [r["next_state_fuzzratio"] for r in results if r["next_state_fuzzratio"] > 0],
     "next_state_incorrect_fuzzratio": [r["next_state_fuzzratio"] for r in results if r["next_state_fuzzratio"] < 100],
+    "next_state_levenshtein": [r["next_state_levenshtein"] for r in results],
+    "next_state_hamming": [r["next_state_hamming"] for r in results],
     "reward_correct": sum(r["reward_correct"] for r in results),
     "reward_mae": [r["reward_mae"] for r in results if r["reward_mae"] is not None],
     "terminated_correct": sum(r["terminated_correct"] for r in results),
@@ -104,6 +113,8 @@ print(f"Invalid completions: {stats['invalid_completion']/stats['total']:.2%}")
 print(f"Next state correct: {stats['next_state_correct']/stats['total']:.2%}")
 print(f"Next state fuzz-ratio: {sum(stats['next_state_fuzzratio'])/len(stats['next_state_fuzzratio'])/100:.2%}")
 print(f"Next state incorrect fuzz-ratio: {sum(stats['next_state_incorrect_fuzzratio'])/len(stats['next_state_incorrect_fuzzratio'])/100:.2%}")
+print(f"Next state Levenshtein norm. similarity: {sum(stats['next_state_levenshtein'])/len(stats['next_state_levenshtein']):.4f}")
+print(f"Next state Hamming norm. similarity: {sum(stats['next_state_hamming'])/len(stats['next_state_hamming']):.4f}")
 print(f"Reward correct: {stats['reward_correct']/stats['total']:.2%}")
 print(f"Reward MAE: {sum(stats['reward_mae'])/len(stats['reward_mae']):.4f}")
 print(f"Terminated correct: {stats['terminated_correct']/stats['total']:.2%}")
