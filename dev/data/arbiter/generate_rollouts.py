@@ -14,6 +14,10 @@ from argparse import ArgumentParser
 from collections import deque
 import json
 
+# suppress tensorflow warnings
+import os
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
+
 from transformers import pipeline
 import torch
 import chess
@@ -77,8 +81,9 @@ class Policy:
 
 class RookWorldEnvironment:
     def __init__(self, model, batch_size=1):
+        raise NotImplementedError("RookWorldEnvironment is not fully implemented here. Use dev/data/rookworld_evol/generate_rollouts.py instead.")
         self.current_position = [STARTING_POSITION] * batch_size
-        self.previous_moves = [deque(maxlen=10)] * batch_size
+        self.previous_moves = [deque(maxlen=10) for _ in range(args.batch_size)]
         self.m = pipeline("text-generation", model=model, device_map="auto", 
                           torch_dtype=torch.bfloat16, batch_size=batch_size)
         self.m.tokenizer.pad_token_id = self.m.model.config.eos_token_id

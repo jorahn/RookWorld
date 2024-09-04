@@ -1,5 +1,9 @@
 import argparse
 
+# suppress tensorflow warnings
+import os
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
+
 from transformers import pipeline
 from datasets import load_dataset
 import torch
