@@ -139,6 +139,9 @@ while True:
                                     f.write(row+"\n")
                         with open("debug-log.txt", "a") as debug_f:
                             debug_f.write("\n".join(logs[i]) + "\n")
+                    elif args.winning_policy:
+                        # don't log draws
+                        pass
                     else:
                         f.write("\n".join(logs[i]) + "\n")
             else:
@@ -146,7 +149,9 @@ while True:
                 logs[i] = []
 
             # complete the rollout, reset the game
-            pbar_rollouts.update(1)
+            if (args.winning_policy and abs(reward) == 1.0) or not args.winning_policy:
+                # discard draws
+                pbar_rollouts.update(1)
             current_games[i] = (STARTING_POSITION, "0000", deque(maxlen=10))
             logs[i] = []
 
