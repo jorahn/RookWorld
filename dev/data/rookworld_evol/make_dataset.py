@@ -14,22 +14,27 @@ args = parser.parse_args()
 samples = set()
 with open(args.input, "r") as f:
     for line in f:
-        if not args.arbiter_dataset and line.startswith("A: "):
+        if not (args.arbiter_dataset and line.startswith("A: ")):
             samples.add(line)
-samples = [{"text": s} for s in samples]
+        
+samples = [{"text": s.strip()} for s in samples]
 
 ds = Dataset.from_list(samples)
 
 if args.arbiter_dataset:
     ds_arbiter = load_dataset(args.arbiter_dataset, split="train")
+    ds_arbiter = ds_arbiter.map(lambda x: {"text": f"A: {x['text']} "})
     ds = concatenate_datasets([ds, ds_arbiter])
 
 # shuffle and train-test-split
-# avoids slower "interleave_dataset" method
 ds = ds.train_test_split(test_size=args.test_size)
 
 print("processed dataset:")
 print(ds)
+print(ds["train"][0])
+print(ds["train"][1])
+print(ds["test"][0])
+print(ds["test"][1])
 
 if args.push:
     print("pushing to Hugging Face Hub")
