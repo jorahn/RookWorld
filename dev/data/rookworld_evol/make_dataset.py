@@ -31,10 +31,6 @@ ds = ds.train_test_split(test_size=args.test_size)
 
 print("processed dataset:")
 print(ds)
-print(ds["train"][0])
-print(ds["train"][1])
-print(ds["test"][0])
-print(ds["test"][1])
 
 if args.push:
     print("pushing to Hugging Face Hub")
