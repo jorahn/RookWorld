@@ -68,7 +68,7 @@ append_log() {
     {
         echo "===== $header ====="
         echo "Command: $command"
-	tail -n 10 "$log_file"
+	tail -n 15 "$log_file"
         echo ""  # Add a blank line for separation
     } >> "$aggregate_log"
 }

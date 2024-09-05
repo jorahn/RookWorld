@@ -71,7 +71,7 @@ def evaluate_completion(target, prediction):
         invalid = True
     try:
         reward_mae = abs(float(reward) - float(p_reward))
-    except ValueError:
+    except TypeError:
         reward_mae = None
     result = {
         "invalid": invalid, 
