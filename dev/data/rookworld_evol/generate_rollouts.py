@@ -137,8 +137,8 @@ while True:
                                 policy_player = row.split(" ")[2] # player w|b in prefix + state FEN + ...
                                 if (reward == 1.0 and policy_player == last_player) or (reward == -1.0 and policy_player != last_player):
                                     f.write(row+"\n")
-                        with open("debug-log.txt", "a") as debug_f:
-                            debug_f.write("\n".join(logs[i]) + "\n")
+                        #with open("debug-log.txt", "a") as debug_f:
+                        #    debug_f.write("\n".join(logs[i]) + "\n")
                     elif args.winning_policy:
                         # don't log draws
                         pass

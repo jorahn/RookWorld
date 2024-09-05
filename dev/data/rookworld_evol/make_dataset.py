@@ -23,7 +23,14 @@ ds = Dataset.from_list(samples)
 
 if args.arbiter_dataset:
     ds_arbiter = load_dataset(args.arbiter_dataset, split="train")
-    ds_arbiter = ds_arbiter.map(lambda x: {"text": f"A: {x['text']} "})
+    
+    # add task prefix if not present
+    if not ds_arbiter["text"][0].startswith("A: "):
+        ds_arbiter = ds_arbiter.map(lambda x: {"text": f"A: {x['text']} "})
+    
+    # restrict arbiter dataset to max 2/5th of the selfplay dataset
+    ds_arbiter = ds_arbiter.select(range(min(len(ds_arbiter), len(ds) * 2 // 5)))
+
     ds = concatenate_datasets([ds, ds_arbiter])
 
 # shuffle and train-test-split
@@ -31,6 +38,10 @@ ds = ds.train_test_split(test_size=args.test_size)
 
 print("processed dataset:")
 print(ds)
+print("Train split examples:")
+print("\n".join(ds["train"]["text"][:5]))
+print("Test split examples:")
+print("\n".join(ds["test"]["text"][:5]))
 
 if args.push:
     print("pushing to Hugging Face Hub")
