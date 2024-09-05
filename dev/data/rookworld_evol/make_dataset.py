@@ -28,8 +28,8 @@ if args.arbiter_dataset:
     if not ds_arbiter["text"][0].startswith("A: "):
         ds_arbiter = ds_arbiter.map(lambda x: {"text": f"A: {x['text']} "})
     
-    # restrict arbiter dataset to max 2/5th of the selfplay dataset
-    ds_arbiter = ds_arbiter.select(range(min(len(ds_arbiter), len(ds) * 2 // 5)))
+    # restrict arbiter dataset to max 5% of the selfplay dataset
+    ds_arbiter = ds_arbiter.select(range(min(len(ds_arbiter), len(ds) // 20)))
 
     ds = concatenate_datasets([ds, ds_arbiter])
 

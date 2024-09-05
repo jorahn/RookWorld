@@ -6,8 +6,8 @@
 # => training time 18,865 * 300ms = 94.3 min ~= $20
 
 make train_gpt2cu USE_CUDNN=1
-out_dir="log_gpt2_124M_rookworld-evol-st1"
-done_file="$out_dir/DONE_00007092"
+out_dir="log_gpt2_124M_rookworld-evol-st1_base"
+done_file="$out_dir/DONE_00051294"
 
 # in case the training stalls or crashes, loop to resume (-y 1)
 while true; do
@@ -19,24 +19,24 @@ while true; do
     fi
 
     # run python dev/data/rookworld.py to prepro data
-    ./train_gpt2cu \
-                -i "dev/data/rookworld_evol/rookworld-evol-st1-800k_train_*.bin" \
-                -j "dev/data/rookworld_evol/rookworld-evol-st1-800k_val_*.bin" \
+    mpirun -np 2 ./train_gpt2cu \
+                -i "dev/data/rookworld/rookworld-evol-st1_train_*.bin" \
+                -j "dev/data/rookworld/rookworld-evol-st1_val_*.bin" \
                 -o $out_dir \
-                -v 250 -s 5000 -g 144 \
+                -v 100 -s 5000 -g 144 \
                 -n 5000 \
                 -h 0 \
-                -b 16 -t 1024 \
-                -d 16384 \
+                -b 32 -t 1024 \
+                -d 65536 \
                 -r 0 \
                 -z 0 \
                 -c 0.1 \
-                -l 0.00004 \
+                -l 0.0004 \
                 -q 0.0 \
                 -u 500 \
                 -y 1 \
-                -x 7092 \
-                -e "log_gpt2_124M_rookworld_7m_3e/model_00047307.bin"
+                -x 51294 \
+                -e "d12"
 
     sleep 1
 done

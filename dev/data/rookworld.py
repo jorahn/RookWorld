@@ -5,14 +5,14 @@ from glob import glob
 import numpy as np
 import tiktoken
 from tqdm import tqdm
-from datasets import load_dataset, interleave_datasets
+from datasets import load_dataset, interleave_datasets, concatenate_datasets
 
 from data_common import write_datafile
 # ------------------------------------------
 
 
 parser = argparse.ArgumentParser(description="RookWorld dataset preprocessing")
-parser.add_argument("-dsr", "--dataset_rook", type=str, default="lfsm/rook-5m", help="ROOK dataset")
+parser.add_argument("-dsr", "--dataset_rook", type=str, default="lfsm/rook-5m", help="ROOK dataset, comma separated if multiple")
 parser.add_argument("-dsa", "--dataset_arbiter", type=str, default="jrahn/arbiter_2m", help="ARBITER dataset")
 parser.add_argument("-o", "--output", type=str, default="jrahn/rookworld_7m", help="RookWorld HF dataset")
 parser.add_argument("-p", "--push_to_hub", action="store_true", help="Push to Hugging Face Hub")
@@ -86,7 +86,11 @@ def add_arbiter_prefix(ex):
     return ex
 
 print("Loading datasets")
-ds1 = load_dataset(args.dataset_rook, split="train")
+if "," in args.dataset_rook:
+    datasets = args.dataset_rook.split(",")
+    ds1 = concatenate_datasets([load_dataset(d, split="train") for d in datasets])
+else:
+    ds1 = load_dataset(args.dataset_rook, split="train")
 ds2 = load_dataset(args.dataset_arbiter, split="train")
 
 print("Adding arbiter prefix")
@@ -97,7 +101,8 @@ len2 = len(ds2)
 total_len = len1 + len2
 
 print(f"Interleaving datasets (ROOK: {len1:,} samples, ARBITER: {len2:,} samples)")
-ds = interleave_datasets([ds1, ds2], probabilities=[len1/total_len, len2/total_len])
+ds = concatenate_datasets([ds1, ds2])
+#ds = interleave_datasets([ds1, ds2], probabilities=[len1/total_len, len2/total_len])
 
 print("Shuffling + splitting dataset")
 ds = ds.train_test_split(test_size=15_000, seed=args.seed)
