@@ -147,14 +147,14 @@ Filter winning rollouts from self-play of the RookWorld Policy in the RookWorld 
 |--------------|----------------|-------------------------------|--------------------|---------------------|---------------------------------------|
 | ROOK [5M](https://huggingface.co/datasets/lfsm/rook-5m) x 3E |34,932 (3) |   11.5%   |  13.4%   | **39.6%**   | **41.4 (2.4%)**                  |
 | RookWorld 7M x 3E                                            |47,203 (3) | **13.7%** |**16.6%** |   39.2%     |   36.3 (2.7%)                    |
-| RookWorld Evol Stage 1                                       | - | - | - | - | - |
+| RookWorld Evol Stage 1                                       | - | **13.74%** | - | - | - |
 
 **WIP**: -> don't forget arbiter capability
 | Model | Invalid Completions | Next State Accuracy | Next State [NLS](https://en.wikipedia.org/wiki/Levenshtein_distance) | Reward Accuracy | Reward MAE | Terminated Accuracy | Truncated Accuracy |
 |---------------|---------------------|---------------------|----------------------------------------------------------------------|-----------------|------------|---------------------|--------------------|
 | ArbiterSim [2M](https://huggingface.co/datasets/jrahn/arbiter_2m) x 3E | 0% | 92.3% | 99.76% | 98.93% | 0.0098 | 99.04% | 99.89% |
 | RookWorld 7M x 3E                                                      | 0% | **99.61%** | **99.99%** | **99.11%** | **0.0084** | **99.13%** | **99.98%** |
-| RookWorld Evol Stage 1                                                 | - | - | - | - | - | - | - |
+| RookWorld Evol Stage 1                                                 | - | **99.81%** | - | - | - | - | - |
 
 training:
 <div align="center"><img src="train_rookworld_evol_1.jpg" width="585" height="270"></div>
