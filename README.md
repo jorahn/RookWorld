@@ -157,7 +157,7 @@ Filter winning rollouts from self-play of the RookWorld Policy in the RookWorld 
 | RookWorld Evol Stage 1                                                 | - | - | - | - | - | - | - |
 
 training:
-<div align="center"><img src="train_rookworld_evol_1.jpg" width="971" height="448"></div>
+<div align="center"><img src="train_rookworld_evol_1.jpg" width="585" height="270"></div>
 
 ## generate dataset
 1. to generate rollouts of RookWorld Policy in RookWorld Environment run `llm.c/dev/data/rookworld_evol/generate_rollouts.py`
