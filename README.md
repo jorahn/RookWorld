@@ -140,7 +140,6 @@ training:
 
 # RookWorld Evol
 Filter winning rollouts from self-play of the RookWorld Policy in the RookWorld Environment and continue training to achieve stepwise Policy self-improvement.
-RookWorld 7M x 3E fine-tuned on [RookWorld Evol St1 800k](https://huggingface.co/datasets/jrahn/rookworld_evol_st1_800k) dataset, consisting of 580k samples from ROOK task (through RookWorld 7M Policy in RookWorld Environment self-play) and 220k samples from [Arbiter 2M](https://huggingface.co/datasets/jrahn/arbiter_2m) task.  
 
 ## benchmarks
 **WIP**: -> improve over RookWorld 7M x 3E
@@ -148,14 +147,14 @@ RookWorld 7M x 3E fine-tuned on [RookWorld Evol St1 800k](https://huggingface.co
 |--------------|----------------|-------------------------------|--------------------|---------------------|---------------------------------------|
 | ROOK [5M](https://huggingface.co/datasets/lfsm/rook-5m) x 3E |34,932 (3) |   11.5%   |  13.4%   | **39.6%**   | **41.4 (2.4%)**                  |
 | RookWorld 7M x 3E                                            |47,203 (3) | **13.7%** |**16.6%** |   39.2%     |   36.3 (2.7%)                    |
-| RookWorld 7M Evol 1 800k                                     | - | - | - | - | - |
+| RookWorld Evol 1                                             | - | - | - | - | - |
 
 **WIP**: -> don't forget arbiter capability
 | Model | Invalid Completions | Next State Accuracy | Next State [NLS](https://en.wikipedia.org/wiki/Levenshtein_distance) | Reward Accuracy | Reward MAE | Terminated Accuracy | Truncated Accuracy |
 |---------------|---------------------|---------------------|----------------------------------------------------------------------|-----------------|------------|---------------------|--------------------|
 | ArbiterSim [2M](https://huggingface.co/datasets/jrahn/arbiter_2m) x 3E | 0% | 92.3% | 99.76% | 98.93% | 0.0098 | 99.04% | 99.89% |
 | RookWorld 7M x 3E                                                      | 0% | **99.61%** | **99.99%** | **99.11%** | **0.0084** | **99.13%** | **99.98%** |
-| RookWorld 7M Evol 1 800k                                               | - | - | - | - | - | - | - |
+| RookWorld Evol 1                                                       | - | - | - | - | - | - | - |
 
 training:
 <div align="center"><img src="train_rookworld_evol_1.png" width="610" height="282"></div>
@@ -165,5 +164,5 @@ training:
 2. to generate llm.c train and valid files (.bin) from interleaving winning policy generations & samples from Arbiter 2M run `llm.c/dev/data/rookworld_evol/make_dataset.py`
 
 ## run training
-- modify / run `llm.c/scripts/run_gpt2_124M_rookworld_evol_1_800k.sh`
+- modify / run `llm.c/scripts/run_gpt2_124M_rookworld_evol_st1_base.sh`
 - for monitoring, run `jupyter lab` in `llm.c/dev/` and open `vislog2_rook.ipynb`
