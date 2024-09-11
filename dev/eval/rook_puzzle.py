@@ -71,9 +71,14 @@ def make_move(fen):
         move = "0000"
     return move
     
-stats = {"correct_moves": 0, "solved_puzzles": 0}
+stats = {
+    "solved_puzzles": 0, 
+    "total_moves": 0,
+    "correct_moves": 0, 
+}
 for i, row in tqdm(data.iterrows(), total=len(data)):
     targets = row["Moves"].split()
+    stats["total_moves"] += len(targets)
 
     if args.rw:
         # RookWorld Environment
@@ -91,5 +96,10 @@ for i, row in tqdm(data.iterrows(), total=len(data)):
             if move != target:
                 break
 
-print(stats)
-
+print("-" * 50)
+print("Evaluation Complete")
+print(f"Total Puzzles: {len(data)}")
+print(f"Total Moves: {stats['total_moves']}")
+print(f"Correct Moves: {stats['correct_moves']} ({stats['correct_moves'] / stats['total_moves']:.2%})")
+print(f"Solved Puzzles: {stats['solved_puzzles']}")
+print(f"Puzzle Accuracy: {stats['solved_puzzles'] / len(data):.2%}")
