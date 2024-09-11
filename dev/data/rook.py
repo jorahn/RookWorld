@@ -28,10 +28,11 @@ args = parser.parse_args()
 
 
 random.seed(args.seed)
-shard_size = 2**20 
+shard_size = 2**24 
 # for now only small datasets
 # originally reduced to create a suitable small validation set, maybe increase back to 2**20
 name = "rook"
+if args.clear: name += "_clear-"+args.clear
 local_dir = "rook"
 DATA_CACHE_DIR = os.path.join(os.path.dirname(__file__), local_dir)
 
@@ -67,8 +68,11 @@ if "M" in args.clear or "E" in args.clear:
 
 
 # remove exact duplicates
-ds = set(ds)
-print(f"{len(ds):,} samples after exact deduplication")
+if args.clear:
+    print("Skipping exact deduplication due to --clear option")
+else:
+    ds = set(ds)
+    print(f"{len(ds):,} samples after exact deduplication")
 
 # TODO: maybe remove close duplicates
 #  - e.g. only difference is randomized move order
@@ -78,7 +82,10 @@ print(f"{len(ds):,} samples after exact deduplication")
 if not args.eval_only:
     with open("rook/rook_val_500.txt.bak", "r") as f:
         ds_val = set([l.strip() for l in f.readlines()])
-    ds = ds - ds_val
+    if args.clear:
+        ds = [d for d in ds if d not in ds_val]
+    else:
+        ds = ds - ds_val
     print(f"{len(ds):,} samples after eval decontamination")
 
 # shuffle
