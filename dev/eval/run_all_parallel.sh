@@ -27,7 +27,7 @@ if [ $? -ne 0 ]; then
 fi
 
 echo "Model converted successfully. HF model path: $model_hf_path"
-echo "Running 4 evals in parallel. This can take 20-30 minutes."
+echo "Running 5 evals in parallel. This can take 30+ minutes."
 echo ""
 
 # Function to run a command and log its output
@@ -48,12 +48,14 @@ temp_log1=$(mktemp)
 temp_log2=$(mktemp)
 temp_log3=$(mktemp)
 temp_log4=$(mktemp)
+temp_log5=$(mktemp)
 
 # Run the four Python commands in parallel with the provided arguments
 run_command "python3 rook_accuracy.py -m $model_hf_path -d $data_path -g -b 1" "$temp_log1" "ROOK Validation Accuracy Evaluation"
 run_command "python3 rook_bb-cio.py -m $model_hf_path -g -b 1" "$temp_log2" "ROOK BIG-bench Checkmate In One Evaluation"
 run_command "python3 rook_selfplay.py -m $model_hf_path -b 1" "$temp_log3" "ROOK Self-play Evaluation"
 run_command "python3 rook_vs_stockfish.py -m $model_hf_path -g -p $stockfish_path" "$temp_log4" "ROOK vs Stockfish Evaluation"
+run_command "python3 rook_puzzle.py -m $model_hf_path" "$temp_log5" "ROOK Puzzle Accuracy Evaluation"
 
 # Wait for all background processes to finish
 wait
@@ -79,8 +81,9 @@ append_log "ROOK Validation Accuracy Evaluation (rook_accuracy.py -m $model_hf_p
 append_log "ROOK BIG-bench Checkmate In One Evaluation (rook_bb-cio.py -m $model_hf_path -g)" "$temp_log2"
 append_log "ROOK Self-play Evaluation (rook_selfplay.py -m $model_hf_path)" "$temp_log3"
 append_log "ROOK vs Stockfish Evaluation (rook_vs_stockfish.py -m $model_hf_path -g -p $stockfish_path)" "$temp_log4"
+append_log "ROOK Puzzle Accuracy Evaluation (rook_puzzle.py -m $model_hf_path)" "$temp_log5"
 
 # Remove temporary log files
-rm "$temp_log1" "$temp_log2" "$temp_log3" "$temp_log4"
+rm "$temp_log1" "$temp_log2" "$temp_log3" "$temp_log4" "$temp_log5"
 
 echo "All commands have completed. Aggregate output is in $aggregate_log"

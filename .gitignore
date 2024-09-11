@@ -3,6 +3,7 @@ dev/data/**/*.json
 dev/data/**/*.jsonl
 dev/data/eval/pgn*
 dev/data/eval/*.pgn
+dev/eval/*.zst
 llm.c
 
 # Byte-compiled / optimized / DLL files
