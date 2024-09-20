@@ -97,10 +97,13 @@ for i, row in tqdm(data.iterrows(), total=len(data)):
                         stats["solved_puzzles"] += 1
                 else:
                     # any checkmate in one is a correct solution
-                    board.push_uci(move)
-                    if board.is_checkmate():
-                        stats["correct_moves"] += 1
-                        stats["solved_puzzles"] += 1
+                    try:
+                        board.push_uci(move)                    
+                        if board.is_checkmate():
+                            stats["correct_moves"] += 1
+                            stats["solved_puzzles"] += 1
+                    except (chess.IllegalMoveError, chess.InvalidMoveError):
+                        pass
                     break
             board.push_uci(target)
 
