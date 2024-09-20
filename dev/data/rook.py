@@ -13,6 +13,7 @@ from glob import glob
 import numpy as np
 import tiktoken
 from tqdm import tqdm
+from datasets import Dataset
 
 from data_common import write_datafile
 # ------------------------------------------
@@ -22,6 +23,7 @@ parser.add_argument("-i", "--input", type=str, default="rook/rook_*.txt", help="
 parser.add_argument("-s", "--seed", type=int, default=42, help="Random seed")
 parser.add_argument("-e", "--eval_only", type=bool, default=False, help="Create fixed validation set rook_val_500.bin")
 parser.add_argument("-c", "--clear", type=str, default="", help="Insert '-' instead of actual data into [M|E] fields")
+parser.add_argument("-o", "--output", type=str, help="Save HF dataset instead of .bin files")
 parser.add_argument("-d", "--debug", type=bool, default=False, help="Write to stdout instead of to file")
 #parser.add_argument("-s", "--shard_size", type=int, default=10**8, help="Size of each data shard in the output .bin files, in tokens")
 args = parser.parse_args()
@@ -92,6 +94,11 @@ if not args.eval_only:
 ds = list(ds)
 random.shuffle(ds)
 
+if args.output:
+    dataset = Dataset.from_dict({"text": ds})
+    dataset.push_to_hub(args.output)
+    print(f"Saved HF dataset to {args.output}")
+    exit(0)
 
 # init the tokenizer
 enc = tiktoken.get_encoding("gpt2")
