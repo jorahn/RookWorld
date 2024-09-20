@@ -78,23 +78,31 @@ stats = {
 }
 for i, row in tqdm(data.iterrows(), total=len(data)):
     targets = row["Moves"].split()
-    stats["total_moves"] += len(targets)
+    stats["total_moves"] += len(targets) // 2
 
     if args.rw:
         # RookWorld Environment
         raise NotImplementedError("RookWorld Environment not implemented")
     else:
+        
         board = chess.Board(row["FEN"])
         for i, target in enumerate(targets):
-            move = make_move(board.fen())
-            if DEBUG: print(f"Move: {move}, Target: {target}, FEN: {board.fen()}, i: {i}")
-            if move == target:
-                stats["correct_moves"] += 1
-                if i == len(targets) - 1:
-                    stats["solved_puzzles"] += 1
-                board.push_uci(target)
-            if move != target:
-                break
+            if i % 2 == 1:
+                # Player only moves on odd turns
+                move = make_move(board.fen())
+                if DEBUG: print(f"Move: {move}, Target: {target}, FEN: {board.fen()}, i: {i}")
+                if move == target:
+                    stats["correct_moves"] += 1
+                    if i == len(targets) - 1:
+                        stats["solved_puzzles"] += 1
+                else:
+                    # any checkmate in one is a correct solution
+                    board.push_uci(move)
+                    if board.is_checkmate():
+                        stats["correct_moves"] += 1
+                        stats["solved_puzzles"] += 1
+                    break
+            board.push_uci(target)
 
 print("-" * 50)
 print("Evaluation Complete")

@@ -5,6 +5,7 @@ import os
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 
 from transformers import pipeline
+from datasets import load_dataset
 import torch
 import chess
 from tqdm import tqdm
@@ -22,9 +23,25 @@ p = pipeline("text-generation", model=args.model_path, device_map="auto", torch_
 p.tokenizer.pad_token_id = p.model.config.eos_token_id
 p.tokenizer.padding_side = "left"
 
+def process_rook_format(sample):
+    # split validation sample into parts Postion, Moves, Evals, Best move
+    sample_p, sample_m = sample.split("M: ", 1)
+    sample_m, sample_e = sample_m.split("E: ", 1)
+    sample_e, sample_b = sample_e.split("B: ", 1)
+    fen = sample_p.split("P: ")[1].strip()
+    sample_moves = [e.strip() for e in sample_m.strip().split()]
+    sample_evals = [float(e.strip()) for e in sample_e.strip().split()]
+    sample_best = sample_b.strip()
+    return fen, sample_moves, sample_best
+
 # TODO convert to HF dataset
-with open(args.data_path, "r") as f:
-    ds = [l for l in f.readlines() if l.strip()]
+if args.data_path.endswith(".txt"):
+    with open(args.data_path, "r") as f:
+        ds = [l for l in f.readlines() if l.strip()]
+elif args.data_path.endswith(".csv"):
+    ds = load_dataset("csv", data_files=args.data_path)["train"]
+    ds = ds.select(range(1000))
+
 
 print("evaluating ROOK model on validation dataset (illegal moves and accuracy)")
 
@@ -41,14 +58,12 @@ stats = {
 for sample in tqdm(ds):
     stats["total"] += 1
 
-    # split validation sample into parts Postion, Moves, Evals, Best move
-    sample_p, sample_m = sample.split("M: ", 1)
-    sample_m, sample_e = sample_m.split("E: ", 1)
-    sample_e, sample_b = sample_e.split("B: ", 1)
-    fen = sample_p.split("P: ")[1].strip()
-    sample_moves = [e.strip() for e in sample_m.strip().split()]
-    sample_evals = [float(e.strip()) for e in sample_e.strip().split()]
-    sample_best = sample_b.strip()
+    if isinstance(sample, str):
+        fen, sample_moves, sample_best = process_rook_format(sample)
+    else:
+        fen = sample["FEN"]
+        sample_moves = [""] * 5
+        sample_best = sample["Move"]
     
     # generate completion after FEN
     if args.greedy:
