@@ -1,4 +1,7 @@
 <div align="center"><img src="evol.jpeg" width="300" height="213"></div>
+<p align="center">
+  <a href="https://laion.ai/notes/rook/"><b>Blog Post Link</b>👁️</a>
+</p>
 
 This repo contains code for:
 - [**ROOK**](#rook-reasoning-over-organized-knowledge): A chess-playing language model trained on a synthetic dataset with chain-of-thought evaluation from Stockfish.
